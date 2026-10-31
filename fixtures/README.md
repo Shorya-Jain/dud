@@ -13,7 +13,25 @@ Fixtures from real GPUs go in new folders, with `"synthetic": false` in `fixture
 | `a100_80gb_pcie` | 1x A100 80GB PCIe, driver 525 (old XML format), Docker, kernel log blocked |
 | `container_ecc_hidden` | 2x H100 PCIe in Kubernetes in a VM, ECC and row remap values blocked, not root |
 
-Tampered fixtures for the registry checks come in milestone 3.
+## Tampered fixtures
+
+`tampered/<name>/result.json` is a full-test result that the registry must not accept.
+`tampered/<name>/expect.json` gives the expected status and the check that must catch it.
+`server/test/api.test.ts` runs every folder in `tampered/`.
+`scripts/make_server_fixtures.py` makes them. Do not edit them by hand.
+
+| Fixture | Change | Expected |
+|---|---|---|
+| `edited_counters` | Parsed uncorrectable ECC count 2 changed to 0. The raw XML still shows 2. | rejected, `parsed_values` |
+| `lowered_counters` | XML and parsed values both changed from 41 to 10, after an earlier reading with 41. | flagged, `counters` |
+| `replayed_output` | The same raw XML as an earlier accepted submission. | rejected, `replay` |
+| `wrong_memory` | An H100 SXM5 80GB with 40960 MiB, in the XML and in the parsed values. | rejected, `specs` |
+| `impossible_timing` | The challenge commit 1 s after the start. The minimum is 60 s. | rejected, `challenge` |
+
+## Other test data
+
+- `challenge_vectors.json`: challenge results from the Python code. The server tests check that the TypeScript code gives the same results.
+- `server/test/fixtures/*.json`: honest full-test results, made from the four mock fixtures.
 
 ## fixture.json
 

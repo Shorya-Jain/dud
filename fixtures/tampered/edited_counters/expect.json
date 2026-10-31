@@ -1,0 +1,5 @@
+{
+ "description": "The parsed aggregate uncorrectable ECC count is 0, but the raw XML shows 2.",
+ "status": "rejected",
+ "check": "parsed_values"
+}

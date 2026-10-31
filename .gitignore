@@ -5,3 +5,5 @@ build/
 dist/
 dud-results/
 .pytest_cache/
+server/node_modules/
+server/.wrangler/

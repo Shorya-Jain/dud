@@ -1,0 +1,8 @@
+{
+ "description": "The challenge commit arrives 1 s after the issue. The minimum for this work is 60 s.",
+ "challenge_min_ms": 60000,
+ "commit_after_ms": 1000,
+ "status": "rejected",
+ "check": "challenge",
+ "commit_error": "too fast"
+}

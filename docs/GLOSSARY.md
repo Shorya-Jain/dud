@@ -53,3 +53,13 @@ Do not use the words in the "Do not use" column.
 | access | The right to look up the registry. A full test gives it for 30 days. | subscription, license |
 | lookup | One request for the registry data of one card ID. | query, search |
 | quota | The maximum number of lookups in one day. | allowance, limit per day |
+| submission | One full-test result that dud sends to the registry. | upload |
+| accepted | The status of a submission that passed all checks. Its data goes into the registry. | valid result |
+| flagged | The status of a submission that the registry keeps for admin review. It gives no access. | on hold, pending review |
+| rejected | The status of a submission that failed a check. Its data does not go into the registry. | refused |
+| contributor | An account that sent accepted submissions. | uploader, submitter |
+| trust | A number from 0 to 1 for each contributor. New contributors have low trust. | reputation, karma |
+| quarantine | An admin action that stops an account: no access, and its readings are not shown. | ban, suspend |
+| admin | The owner of the registry. | moderator, operator |
+| digest | A 32-bit number that the client makes from one challenge product. | checksum |
+| Merkle root | One hash that represents all digests of one GPU in a challenge. | tree hash |

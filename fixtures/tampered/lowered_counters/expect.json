@@ -1,0 +1,8 @@
+{
+ "description": "A consistent edit lowers the aggregate correctable ECC count from 41 to 10 after a reading with 41.",
+ "setup": [
+  "h100_sxm_pending_remap"
+ ],
+ "status": "flagged",
+ "check": "counters"
+}

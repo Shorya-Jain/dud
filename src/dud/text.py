@@ -10,7 +10,10 @@ Write in ASD-STE100 Simplified Technical English:
 
 MOCK_BANNER = "MOCK MODE: dud uses fixture data. These results are not from a real GPU."
 QUICK_START = "dud {version}: quick test started."
-COMMAND_NOT_IN_VERSION = "This version of dud does not have the '{name}' command. A later version will have it."
+FULL_START = "dud {version}: full test started."
+FULL_NOT_YET = "This version does not do the DCGM test, the performance tests or the load test. A later version adds them."
+STOPPED = "dud stopped."
+BAD_LOAD_MINUTES = "The --load-minutes value must be 1 or more."
 RESULT_WRITTEN = "Result file: {path}"
 REPORT_WRITTEN = "Report: {path}"
 RAW_WRITTEN = "Raw output: {path}"
@@ -22,11 +25,57 @@ BAD_RESULT_FILE = "dud cannot read the file {path}. Make sure that the path is c
 NOT_A_RESULT_FILE = "The file {path} is not a dud result file."
 WRONG_SCHEMA_VERSION = "This result file uses schema version {found}. This version of dud reads schema version {expected}."
 
+# Login and account
+LOGIN_OPEN = "On a computer or phone with a browser, open {uri}."
+LOGIN_CODE = "Type this code: {code}"
+LOGIN_WAIT = "dud waits while you approve the sign-in on GitHub."
+LOGIN_DONE = "You are signed in as {login}. dud keeps your token in {path}."
+LOGIN_NEW_ACCOUNT = "Your GitHub account is new. The registry keeps your first results for review before they give access."
+LOGOUT_DONE = "dud deleted your token from this computer."
+LOGOUT_NONE = "dud did not find a token on this computer."
+NOT_LOGGED_IN = "You are not signed in. Run dud login."
+STATUS_ACCOUNT = "Signed in as {login} at {url}."
+STATUS_ACCESS = "You have registry access until {date}."
+STATUS_NO_ACCESS = "You do not have registry access. Run dud full to get access."
+STATUS_LOOKUPS = "Lookups today: {used} of {quota}."
+STATUS_QUARANTINED = "The registry owner stopped this account. Your results do not go into the registry."
+GITHUB_DEVICE_FAILED = "GitHub did not start the sign-in. Details: {detail}"
+GITHUB_DENIED = "You did not approve the sign-in on GitHub."
+GITHUB_EXPIRED = "The sign-in code expired. Run dud login again."
+REGISTRY_UNREACHABLE = "dud cannot connect to the registry at {url}. Details: {detail}"
+REGISTRY_ERROR = "The registry sent an error (HTTP {status})."
+
+# Full test and challenge
+CARD_ID_MISSING = "GPU {index} has no card ID or no known model. The registry cannot accept a result from this node."
+TORCH_MISSING = "The full test needs PyTorch with CUDA. The install command is: {command}"
+TORCH_ASK = "Install PyTorch now? It is a download of approximately 2.5 GB. [y/N] "
+TORCH_NOT_INSTALLED = "dud stopped, because PyTorch is not installed. Install PyTorch, then run dud full again."
+TORCH_NO_CUDA = "PyTorch cannot find a CUDA GPU. The full test needs a CUDA GPU."
+SELF_TEST_FAILED = "GPU {index} gave a wrong result in the challenge self-test. dud stopped. Do not use this GPU."
+CHALLENGE_START = "Challenge: dud does registry work on {count} GPUs. Do not stop dud."
+CHALLENGE_DONE = "Challenge: the registry accepted the work. The registry measured {seconds} s."
+SUBMIT_START = "dud sends the result to the registry."
+SUBMIT_ACCEPTED_ACCESS = "The registry accepted your result. You have registry access until {date}."
+SUBMIT_ACCEPTED_NO_ACCESS = "The registry accepted your result. It does not give access. Reason: {reason}."
+SUBMIT_FLAGGED = "The registry keeps your result for review. It does not give access now. Reasons: {reason}"
+SUBMIT_REJECTED = "The registry did not accept your result. Reasons: {reason}"
+SUBMIT_SKIPPED = "dud did not send the result, because you used --no-submit."
+SUBMIT_FAILED = "dud could not send the result. Your result file is on this node. Details: {detail}"
+
+# Registry history in the quick test
+REGISTRY_NOT_LOGGED_IN = "dud did not compare with the registry. Run dud login to compare with earlier readings."
+REGISTRY_CARD_NONE = "GPU {index}: the registry has no earlier readings of this GPU."
+REGISTRY_CARD_HISTORY = "GPU {index}: the registry has {count} earlier readings from {contributors} accounts. The first is from {first}."
+REGISTRY_LOW_TRUST = "Readings with low trust come from new contributors."
+
 HELP = {
     "description": "Check the health of a rented NVIDIA data center GPU.",
     "quick": "Read the identity and history of each GPU. This takes approximately 1 minute.",
     "full": "Do the full test and send the result to the registry.",
     "login": "Sign in with your GitHub account.",
+    "logout": "Delete your registry token from this computer.",
+    "status": "Show your registry account and access.",
+    "offline": "Do not compare with the registry.",
     "report": "Show the report for a saved result file.",
     "report_file": "The result file (result.json).",
     "report_out": "Write the report to this file.",
@@ -54,6 +103,10 @@ SECTION_XID = "XID errors"
 SECTION_NOT_READ = "Values that dud could not read"
 SECTION_FINDINGS = "Findings"
 SECTION_VISIBILITY = "Visibility summary"
+SECTION_REGISTRY = "Registry history"
+COL_DATE = "Date"
+COL_PROVIDER = "Provider"
+COL_TRUST = "Trust"
 
 NO_VERDICT = "This version of dud does not give a verdict."
 NODE_SUMMARY = "This node has {attached} GPUs. dud examined {examined} GPUs."
@@ -135,6 +188,7 @@ FINDINGS = {
     "smi_nvml_mismatch": "nvidia-smi and NVML show different values for '{label}'.",
     "duplicate_card_id": "Two GPUs have the same card ID.",
     "no_gpus": "dud found no GPUs.",
+    "counter_lower_than_registry": "'{label}' is lower now than in an earlier registry reading. A reset or a wrong reading can cause this.",
 }
 FINDING_UNKNOWN = "dud recorded the finding '{code}'."
 

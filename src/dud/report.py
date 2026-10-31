@@ -134,6 +134,45 @@ def _connections(host: dict) -> str:
     return table + "\n" + T.CONNECTIONS_LEGEND + "\n"
 
 
+def _registry_card(doc: dict, gpu: dict):
+    reg = doc.get("registry") or {}
+    return reg.get("cards", {}).get(gpu["card"]["uuid_sha256"]["value"] or "")
+
+
+def registry_lines(doc: dict) -> list:
+    """Short registry summary for the terminal and the report."""
+    reg = doc.get("registry")
+    if not reg:
+        return []
+    if reg["status"] != "ok":
+        return [reg["message"]]
+    lines = []
+    for gpu in doc["gpus"]:
+        data = _registry_card(doc, gpu)
+        if data is None:
+            continue
+        if not data["readings"]:
+            lines.append(T.REGISTRY_CARD_NONE.format(index=gpu["index"]))
+        else:
+            lines.append(T.REGISTRY_CARD_HISTORY.format(index=gpu["index"], count=len(data["readings"]),
+                                                        contributors=data["contributors"], first=data["readings"][0]["date"]))
+    return lines
+
+
+def _registry_table(doc: dict, gpu: dict) -> str | None:
+    data = _registry_card(doc, gpu)
+    if not data or not data["readings"]:
+        return None
+    rows = [(r["date"], r["provider"] or T.DASH,
+             fmt_value(r["ecc"]["aggregate_correctable"]), fmt_value(r["ecc"]["aggregate_uncorrectable"]),
+             fmt_value(r["row_remap"]["correctable"]), fmt_value(r["row_remap"]["uncorrectable"]),
+             fmt_value(r["row_remap"]["pending"]), r["trust"]) for r in data["readings"]]
+    labels = [T.LABELS[p] for p in ("history.ecc.aggregate.correctable", "history.ecc.aggregate.uncorrectable",
+                                    "history.row_remap.correctable", "history.row_remap.uncorrectable",
+                                    "history.row_remap.pending")]
+    return _table([T.COL_DATE, T.COL_PROVIDER] + labels + [T.COL_TRUST], rows) + "\n" + T.REGISTRY_LOW_TRUST + "\n"
+
+
 def _duration(seconds: float) -> str:
     return T.DURATION.format(minutes=int(seconds // 60), seconds=int(round(seconds % 60)))
 
@@ -158,6 +197,10 @@ def render(doc: dict) -> str:
 
     out.append(f"## {T.SECTION_VERDICT}\n")
     out.append((T.NO_VERDICT if doc["node"]["verdict"] is None else str(doc["node"]["verdict"])) + "\n")
+    reg_lines = registry_lines(doc)
+    if reg_lines:
+        out.append(f"## {T.SECTION_REGISTRY}\n")
+        out.append("\n".join(f"- {line}" for line in reg_lines) + "\n")
 
     out.append(f"## {T.SECTION_NODE}\n")
     attached = host["attached_gpus"]["value"] if host["attached_gpus"]["status"] == "ok" else doc["node"]["gpu_count"]
@@ -190,6 +233,10 @@ def render(doc: dict) -> str:
         else:
             out.append(_table([T.COL_XID, T.COL_UPTIME, T.COL_MESSAGE],
                               [(e["xid"], fmt_value(e["uptime_s"]), e["message"]) for e in xid["value"]]))
+        reg_table = _registry_table(doc, gpu)
+        if reg_table:
+            out.append(f"### {T.SECTION_REGISTRY}\n")
+            out.append(reg_table)
         out.append(f"### {T.SECTION_SNAPSHOT}\n")
         out.append(_rows(gpu, SNAPSHOT_ROWS))
         out.append(f"### {T.SECTION_NOT_READ}\n")

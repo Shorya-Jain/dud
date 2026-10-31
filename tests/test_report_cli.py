@@ -47,7 +47,12 @@ def test_terminal_summary():
 def mock_env(monkeypatch, tmp_path):
     monkeypatch.setenv("DUD_MOCK", "1")
     monkeypatch.setenv("DUD_FIXTURES_DIR", str(FIXTURES))
-    return tmp_path
+    monkeypatch.setenv("DUD_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("DUD_TOKEN", raising=False)
+    monkeypatch.delenv("DUD_API_URL", raising=False)
+    out = tmp_path / "out"
+    out.mkdir()
+    return out
 
 
 def test_cli_quick_and_report(mock_env, capsys, monkeypatch):
@@ -74,8 +79,10 @@ def test_cli_errors(mock_env, capsys, monkeypatch):
     monkeypatch.setenv("DUD_FIXTURE", "no_such_fixture")
     assert cli.main(["quick", "--out-dir", str(mock_env)]) == 1
     assert "no_such_fixture" in capsys.readouterr().err
-    assert cli.main(["full"]) == 2
-    assert cli.main(["login"]) == 2
+    monkeypatch.setenv("DUD_FIXTURE", "h100_sxm_healthy")
+    assert cli.main(["full", "--out-dir", str(mock_env)]) == 1  # Not signed in.
+    assert T.NOT_LOGGED_IN in capsys.readouterr().err
+    assert cli.main(["status"]) == 1
     bad = mock_env / "bad.json"
     bad.write_text('{"kind": "other"}')
     assert cli.main(["report", str(bad)]) == 1

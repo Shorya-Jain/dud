@@ -1,0 +1,39 @@
+# Cloudflare Worker for the dud registry. See docs/DEPLOY.md.
+name = "dud-registry"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[limits]
+# Each challenge reveal does approximately 0.5 s of CPU work.
+cpu_ms = 30000
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dud-registry"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"   # docs/DEPLOY.md, step 4
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "RAW"
+bucket_name = "dud-raw"
+
+[vars]
+GITHUB_CLIENT_ID = "REPLACE_WITH_YOUR_GITHUB_CLIENT_ID"  # docs/DEPLOY.md, step 2
+# Settings. Defaults are in src/env.ts. Values here override them.
+ACCESS_DAYS = "30"
+DAILY_LOOKUP_QUOTA = "100"
+CHALLENGE_TTL_HOURS = "3"
+CARD_UNLOCK_DAYS = "30"
+NEW_GITHUB_ACCOUNT_DAYS = "30"
+CONTRIBUTOR_CAP = "0.1"
+# Set to "true" when milestone 2 (the load test) is in the CLI.
+REQUIRE_LOAD = "false"
+
+# Secrets (do not put them in this file). Set them with:
+#   npx wrangler secret put GITHUB_CLIENT_SECRET
+#   npx wrangler secret put CARD_ID_PEPPER
+#   npx wrangler secret put ADMIN_TOKEN

@@ -1,0 +1,115 @@
+# NVIDIA datasheet values for each GPU model that dud knows.
+#
+# Rules:
+# - Every value has a `source` link.
+# - `verify: true` means: a person must check this value against the source or
+#   against real nvidia-smi output. Remove the flag after the check.
+# - Tensor throughput values are DENSE (without sparsity). NVIDIA pages often
+#   show the sparse value, which is 2x the dense value.
+# - The registry server uses a JSON copy of this file. After a change, run:
+#       .venv/bin/python scripts/build_specs.py
+#
+# Model keys must match src/dud/gpumodels.py.
+
+version: 1
+
+sources:
+  h100: &h100 https://www.nvidia.com/en-us/data-center/h100/
+  h100_pcie_brief: &h100pcie https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf
+  h200: &h200 https://www.nvidia.com/en-us/data-center/h200/
+  a100: &a100 https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf
+  nvidia_smi: &smi "Value as nvidia-smi reports it (MiB). Datasheets give GB."
+
+# The registry challenge (see docs/DESIGN.md, "Challenge"). The server uses
+# these numbers to size the work and to set the time limits.
+challenge:
+  m: 1024                # Rows of A and of the output.
+  n: 1024                # Columns of B and of the output.
+  k: 16384               # Inner size.
+  pool: 8                # Number of A and of B matrices in the pool.
+  batch: 32              # Products in one GPU call. All products in a batch use the same B.
+  target_seconds: 30     # Planned time at assumed_efficiency.
+  assumed_efficiency: 0.5
+  # Slower than this fraction of the datasheet FP16 rate = too slow for the claimed model.
+  min_efficiency: 0.25   # verify: CALIBRATE with real runs before launch. Raise it to make faking harder.
+  network_allowance_seconds: 60
+  samples_per_gpu: 2     # Products that the server checks for each GPU.
+
+models:
+  H100-SXM5-80GB:
+    name: NVIDIA H100 SXM5 80GB
+    memory_mib: {min: 81000, max: 81920, source: *smi, verify: true}
+    power_default_w: {min: 690, max: 700, source: *h100}
+    fp16_dense_tflops: {value: 989.4, source: *h100}
+    bf16_dense_tflops: {value: 989.4, source: *h100}
+    fp8_dense_tflops: {value: 1978.9, source: *h100}
+    hbm_gbps: {value: 3350, source: *h100}
+
+  H100-PCIE-80GB:
+    name: NVIDIA H100 PCIe 80GB
+    memory_mib: {min: 81000, max: 81920, source: *smi, verify: true}
+    power_default_w: {min: 300, max: 350, source: *h100pcie}
+    fp16_dense_tflops: {value: 756.0, source: *h100pcie, verify: true}
+    bf16_dense_tflops: {value: 756.0, source: *h100pcie, verify: true}
+    fp8_dense_tflops: {value: 1513.0, source: *h100pcie, verify: true}
+    hbm_gbps: {value: 2000, source: *h100pcie, verify: true}
+
+  H100-NVL-94GB:
+    name: NVIDIA H100 NVL 94GB
+    memory_mib: {min: 93000, max: 96300, source: *smi, verify: true}
+    power_default_w: {min: 350, max: 400, source: *h100, verify: true}
+    fp16_dense_tflops: {value: 835.5, source: *h100, verify: true}
+    bf16_dense_tflops: {value: 835.5, source: *h100, verify: true}
+    fp8_dense_tflops: {value: 1670.5, source: *h100, verify: true}
+    hbm_gbps: {value: 3900, source: *h100}
+
+  H200-SXM-141GB:
+    name: NVIDIA H200 SXM 141GB
+    memory_mib: {min: 139000, max: 144500, source: *smi, verify: true}
+    power_default_w: {min: 690, max: 700, source: *h200}
+    fp16_dense_tflops: {value: 989.4, source: *h200}
+    bf16_dense_tflops: {value: 989.4, source: *h200}
+    fp8_dense_tflops: {value: 1978.9, source: *h200}
+    hbm_gbps: {value: 4800, source: *h200}
+
+  H200-NVL-141GB:
+    name: NVIDIA H200 NVL 141GB
+    memory_mib: {min: 139000, max: 144500, source: *smi, verify: true}
+    power_default_w: {min: 500, max: 600, source: *h200, verify: true}
+    fp16_dense_tflops: {value: 835.5, source: *h200, verify: true}
+    bf16_dense_tflops: {value: 835.5, source: *h200, verify: true}
+    fp8_dense_tflops: {value: 1670.5, source: *h200, verify: true}
+    hbm_gbps: {value: 4800, source: *h200}
+
+  A100-SXM4-40GB:
+    name: NVIDIA A100 SXM4 40GB
+    memory_mib: {min: 40000, max: 40960, source: *smi, verify: true}
+    power_default_w: {min: 390, max: 400, source: *a100}
+    fp16_dense_tflops: {value: 312.0, source: *a100}
+    bf16_dense_tflops: {value: 312.0, source: *a100}
+    hbm_gbps: {value: 1555, source: *a100}
+
+  A100-SXM4-80GB:
+    name: NVIDIA A100 SXM4 80GB
+    memory_mib: {min: 80000, max: 81920, source: *smi, verify: true}
+    # Some HGX A100 80GB boards ship with a 500 W default.
+    power_default_w: {min: 390, max: 500, source: *a100, verify: true}
+    fp16_dense_tflops: {value: 312.0, source: *a100}
+    bf16_dense_tflops: {value: 312.0, source: *a100}
+    hbm_gbps: {value: 2039, source: *a100}
+
+  A100-PCIE-40GB:
+    name: NVIDIA A100 PCIe 40GB
+    memory_mib: {min: 40000, max: 40960, source: *smi, verify: true}
+    power_default_w: {min: 245, max: 250, source: *a100}
+    fp16_dense_tflops: {value: 312.0, source: *a100}
+    bf16_dense_tflops: {value: 312.0, source: *a100}
+    hbm_gbps: {value: 1555, source: *a100}
+
+  A100-PCIE-80GB:
+    name: NVIDIA A100 80GB PCIe
+    memory_mib: {min: 80000, max: 81920, source: *smi, verify: true}
+    power_default_w: {min: 295, max: 300, source: *a100}
+    fp16_dense_tflops: {value: 312.0, source: *a100}
+    bf16_dense_tflops: {value: 312.0, source: *a100}
+    hbm_gbps: {value: 1935, source: *a100}

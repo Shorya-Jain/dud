@@ -1,0 +1,5 @@
+{
+ "description": "An H100 SXM5 80GB that reports 40960 MiB of memory.",
+ "status": "rejected",
+ "check": "specs"
+}

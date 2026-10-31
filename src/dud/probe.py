@@ -7,10 +7,11 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import time
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from .model import DudError, utc_now
@@ -199,8 +200,10 @@ class MockProbe:
 
     mock = True
 
-    def __init__(self, folder: Path):
+    def __init__(self, folder: Path, live_time: bool = False):
+        """live_time: write the current time into the nvidia-smi XML, as a real node does."""
         self.folder = Path(folder)
+        self.live_time = live_time
         self.fixture = self.folder.name
         self.spec = json.loads((self.folder / "fixture.json").read_text())
         nvml_file = self.spec.get("nvml_file")
@@ -216,6 +219,9 @@ class MockProbe:
         if item is None:
             return CmdResult(argv, stderr=f"{argv[0]}: command not found", started_at=utc_now(), failure="not_found")
         stdout = self._content(item, "stdout", "stdout_file")
+        if self.live_time and "<timestamp>" in stdout:
+            local = datetime.now(timezone.utc) + timedelta(seconds=self.utc_offset_s())
+            stdout = re.sub(r"<timestamp>[^<]*</timestamp>", f"<timestamp>{local:%a %b %d %H:%M:%S %Y}</timestamp>", stdout, count=1)
         stderr = item.get("stderr", "")
         code = item.get("exit_code", 0)
         failure = None if code == 0 else classify_failure(stderr)
@@ -260,5 +266,5 @@ def resolve_fixture(name: str) -> Path:
 
 def get_probe():
     if os.environ.get("DUD_MOCK") == "1":
-        return MockProbe(resolve_fixture(os.environ.get("DUD_FIXTURE") or DEFAULT_FIXTURE))
+        return MockProbe(resolve_fixture(os.environ.get("DUD_FIXTURE") or DEFAULT_FIXTURE), live_time=True)
     return RealProbe()

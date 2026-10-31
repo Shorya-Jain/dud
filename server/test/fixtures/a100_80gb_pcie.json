@@ -1,0 +1,748 @@
+{
+ "schema_version": 1,
+ "kind": "dud.result",
+ "run": {
+  "run_id": "3f33020f-4a69-49cf-a3b3-703a3073a1c8",
+  "mode": "full",
+  "dud_version": "0.1.0",
+  "mock": false,
+  "fixture": null,
+  "started_at": "2026-10-31T11:59:30.000Z",
+  "finished_at": "2026-10-31T12:59:30.000Z",
+  "duration_s": 3600.0,
+  "utc_offset_s": 0,
+  "options": {
+   "gpus": null,
+   "load_minutes": 15,
+   "skip_dcgm": false,
+   "submit": true
+  },
+  "provider": {
+   "reported": "testcloud"
+  }
+ },
+ "host": {
+  "driver_version": {
+   "value": "525.147.05",
+   "status": "ok",
+   "source": "smi_xml",
+   "raw_ref": "smi_q_x",
+   "reason": null,
+   "detail": null
+  },
+  "cuda_driver_version": {
+   "value": "12.0",
+   "status": "ok",
+   "source": "smi_xml",
+   "raw_ref": "smi_q_x",
+   "reason": null,
+   "detail": null
+  },
+  "nvml_version": {
+   "value": "12.525.147.05",
+   "status": "ok",
+   "source": "nvml",
+   "raw_ref": "nvml_snapshot",
+   "reason": null,
+   "detail": null
+  },
+  "smi_timestamp": {
+   "value": "Sat Oct 31 12:00:00 2026",
+   "status": "ok",
+   "source": "smi_xml",
+   "raw_ref": "smi_q_x",
+   "reason": null,
+   "detail": null
+  },
+  "attached_gpus": {
+   "value": 1,
+   "status": "ok",
+   "source": "smi_xml",
+   "raw_ref": "smi_q_x",
+   "reason": null,
+   "detail": null
+  },
+  "os": {
+   "value": "Ubuntu 22.04.4 LTS",
+   "status": "ok",
+   "source": "os",
+   "raw_ref": null,
+   "reason": null,
+   "detail": null
+  },
+  "kernel": {
+   "value": "5.4.0-150-generic",
+   "status": "ok",
+   "source": "os",
+   "raw_ref": null,
+   "reason": null,
+   "detail": null
+  },
+  "cpu_model": {
+   "value": "AMD EPYC 7543 32-Core Processor",
+   "status": "ok",
+   "source": "os",
+   "raw_ref": null,
+   "reason": null,
+   "detail": null
+  },
+  "environment": {
+   "container": {
+    "value": "docker",
+    "status": "ok",
+    "source": "os",
+    "raw_ref": null,
+    "reason": null,
+    "detail": null
+   },
+   "virtualization": {
+    "value": "none",
+    "status": "ok",
+    "source": "os",
+    "raw_ref": null,
+    "reason": null,
+    "detail": null
+   },
+   "dmi_vendor": {
+    "value": null,
+    "status": "not_supported",
+    "source": "os",
+    "raw_ref": null,
+    "reason": "file_not_found",
+    "detail": "/sys/class/dmi/id/sys_vendor"
+   },
+   "dmi_product": {
+    "value": null,
+    "status": "not_supported",
+    "source": "os",
+    "raw_ref": null,
+    "reason": "file_not_found",
+    "detail": "/sys/class/dmi/id/product_name"
+   },
+   "is_root": {
+    "value": true,
+    "status": "ok",
+    "source": "os",
+    "raw_ref": null,
+    "reason": null,
+    "detail": null
+   }
+  },
+  "kernel_log": {
+   "value": null,
+   "status": "blocked",
+   "source": "kernel_log",
+   "raw_ref": "kernel_log",
+   "reason": "permission_denied",
+   "detail": "dmesg: read kernel buffer failed: Operation not permitted; journalctl: command not found"
+  },
+  "topology": {
+   "value": {
+    "columns": [
+     "GPU0",
+     "CPU Affinity",
+     "NUMA Affinity",
+     "GPU NUMA ID"
+    ],
+    "rows": {
+     "GPU0": {
+      "GPU0": "X",
+      "CPU Affinity": "0-15",
+      "NUMA Affinity": "0",
+      "GPU NUMA ID": "N/A"
+     }
+    }
+   },
+   "status": "ok",
+   "source": "smi_topo",
+   "raw_ref": "smi_topo_m",
+   "reason": null,
+   "detail": null
+  }
+ },
+ "gpus": [
+  {
+   "index": 0,
+   "pci_bus_id": "00000000:41:00.0",
+   "card": {
+    "hash_scheme": "dud-card-v1",
+    "uuid_sha256": {
+     "value": "0af0a62ea4cb3be1dab75eb34649da584bb2a800e324c42e8b88e086182aa102",
+     "status": "ok",
+     "source": "derived",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "serial_sha256": {
+     "value": "db825a29fc41ee6b784ffae00c44978d15eec2e8f7e11535e3646df4049e31c4",
+     "status": "ok",
+     "source": "derived",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    }
+   },
+   "identity": {
+    "name": {
+     "value": "NVIDIA A100 80GB PCIe",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "model_key": {
+     "value": "A100-PCIE-80GB",
+     "status": "ok",
+     "source": "derived",
+     "raw_ref": null,
+     "reason": null,
+     "detail": null
+    },
+    "form_factor": {
+     "value": "PCIe",
+     "status": "ok",
+     "source": "derived",
+     "raw_ref": null,
+     "reason": null,
+     "detail": null
+    },
+    "architecture": {
+     "value": "Ampere",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "vbios": {
+     "value": "92.00.90.00.04",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "board_part_number": {
+     "value": "900-21001-0020-100",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "pci_device_id": {
+     "value": "20B510DE",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "pci_subsystem_id": {
+     "value": "153310DE",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "inforom_image": {
+     "value": "G262.0230.00.04",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "gsp_firmware": {
+     "value": null,
+     "status": "not_supported",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": "smi_na",
+     "detail": "N/A"
+    },
+    "memory_total_mib": {
+     "value": 81920,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "power_limit_default_w": {
+     "value": 300.0,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "power_limit_current_w": {
+     "value": 300.0,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "power_limit_max_w": {
+     "value": 300.0,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "pcie": {
+     "gen_max": {
+      "value": 4,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "gen_current": {
+      "value": 1,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "width_max": {
+      "value": 16,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "width_current": {
+      "value": 16,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     }
+    },
+    "mig_mode": {
+     "value": false,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "persistence_mode": {
+     "value": true,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "compute_mode": {
+     "value": "Default",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "max_clocks": {
+     "sm_mhz": {
+      "value": 1410,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "mem_mhz": {
+      "value": 1512,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     }
+    },
+    "fabric_state": {
+     "value": null,
+     "status": "not_supported",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": "smi_na",
+     "detail": "N/A"
+    },
+    "nvlink": {
+     "value": null,
+     "status": "not_supported",
+     "source": "nvml",
+     "raw_ref": "nvml_snapshot",
+     "reason": "nvml_not_supported",
+     "detail": "mock"
+    }
+   },
+   "history": {
+    "ecc_mode": {
+     "value": true,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "ecc_mode_pending": {
+     "value": true,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "ecc": {
+     "volatile": {
+      "correctable": {
+       "value": 0,
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      },
+      "uncorrectable": {
+       "value": 0,
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      },
+      "detail": {
+       "value": {
+        "sram_correctable": 0,
+        "sram_uncorrectable": 0,
+        "dram_correctable": 0,
+        "dram_uncorrectable": 0
+       },
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      }
+     },
+     "aggregate": {
+      "correctable": {
+       "value": 3,
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      },
+      "uncorrectable": {
+       "value": 0,
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      },
+      "detail": {
+       "value": {
+        "sram_correctable": 0,
+        "sram_uncorrectable": 0,
+        "dram_correctable": 3,
+        "dram_uncorrectable": 0
+       },
+       "status": "ok",
+       "source": "smi_xml",
+       "raw_ref": "smi_q_x",
+       "reason": null,
+       "detail": null
+      }
+     },
+     "aggregate_sram_sources": {
+      "value": null,
+      "status": "not_supported",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": "not_in_output",
+      "detail": null
+     }
+    },
+    "row_remap": {
+     "correctable": {
+      "value": 0,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "uncorrectable": {
+      "value": 0,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "pending": {
+      "value": false,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "failed": {
+      "value": false,
+      "status": "ok",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": null,
+      "detail": null
+     },
+     "bank_availability": {
+      "max": {
+       "value": 640,
+       "status": "ok",
+       "source": "nvml",
+       "raw_ref": "nvml_snapshot",
+       "reason": "from_nvml",
+       "detail": "nvidia-smi: not_in_output"
+      },
+      "high": {
+       "value": 0,
+       "status": "ok",
+       "source": "nvml",
+       "raw_ref": "nvml_snapshot",
+       "reason": "from_nvml",
+       "detail": "nvidia-smi: not_in_output"
+      },
+      "partial": {
+       "value": 0,
+       "status": "ok",
+       "source": "nvml",
+       "raw_ref": "nvml_snapshot",
+       "reason": "from_nvml",
+       "detail": "nvidia-smi: not_in_output"
+      },
+      "low": {
+       "value": 0,
+       "status": "ok",
+       "source": "nvml",
+       "raw_ref": "nvml_snapshot",
+       "reason": "from_nvml",
+       "detail": "nvidia-smi: not_in_output"
+      },
+      "none": {
+       "value": 0,
+       "status": "ok",
+       "source": "nvml",
+       "raw_ref": "nvml_snapshot",
+       "reason": "from_nvml",
+       "detail": "nvidia-smi: not_in_output"
+      }
+     }
+    },
+    "retired_pages": {
+     "correctable": {
+      "value": null,
+      "status": "not_supported",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": "replaced_by_row_remap",
+      "detail": "N/A"
+     },
+     "uncorrectable": {
+      "value": null,
+      "status": "not_supported",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": "replaced_by_row_remap",
+      "detail": "N/A"
+     },
+     "pending": {
+      "value": null,
+      "status": "not_supported",
+      "source": "smi_xml",
+      "raw_ref": "smi_q_x",
+      "reason": "replaced_by_row_remap",
+      "detail": "N/A"
+     }
+    },
+    "xid_events": {
+     "value": null,
+     "status": "blocked",
+     "source": "kernel_log",
+     "raw_ref": "kernel_log",
+     "reason": "permission_denied",
+     "detail": "dmesg: read kernel buffer failed: Operation not permitted; journalctl: command not found"
+    }
+   },
+   "snapshot": {
+    "gpu_temp_c": {
+     "value": 34,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "memory_temp_c": {
+     "value": null,
+     "status": "not_supported",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": "smi_na",
+     "detail": "N/A"
+    },
+    "power_draw_w": {
+     "value": 45.12,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "performance_state": {
+     "value": "P0",
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "reset_required": {
+     "value": false,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "pcie_replay_count": {
+     "value": 0,
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    },
+    "throttle_reasons_active": {
+     "value": [
+      "gpu_idle"
+     ],
+     "status": "ok",
+     "source": "smi_xml",
+     "raw_ref": "smi_q_x",
+     "reason": null,
+     "detail": null
+    }
+   },
+   "findings": [],
+   "diag": null,
+   "perf": null,
+   "load": null,
+   "verdict": null
+  }
+ ],
+ "node": {
+  "gpu_count": 1,
+  "p2p_bandwidth": null,
+  "verdict": null
+ },
+ "findings": [],
+ "challenge": null,
+ "attestation": null,
+ "raw": [
+  {
+   "id": "smi_q_x",
+   "kind": "command",
+   "command": [
+    "nvidia-smi",
+    "-q",
+    "-x"
+   ],
+   "gpu_index": null,
+   "status": "ok",
+   "exit_code": 0,
+   "started_at": "2026-10-31T11:59:31.000Z",
+   "duration_ms": 5,
+   "redactions": [
+    "serial",
+    "uuid"
+   ],
+   "stderr": null,
+   "sha256": "9727a728bcf89088df6e949d28fb95de7617bd97db702ac37c7455cc21ad69d0",
+   "bytes": 6221,
+   "encoding": "gzip+base64",
+   "content": "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"
+  },
+  {
+   "id": "smi_topo_m",
+   "kind": "command",
+   "command": [
+    "nvidia-smi",
+    "topo",
+    "-m"
+   ],
+   "gpu_index": null,
+   "status": "ok",
+   "exit_code": 0,
+   "started_at": "2026-10-31T11:59:31.000Z",
+   "duration_ms": 5,
+   "redactions": [],
+   "stderr": null,
+   "sha256": "bfdb96665d614a272cb3fea43fc843d8bd2452a691c9dd66696fab11e4eb943b",
+   "bytes": 600,
+   "encoding": "gzip+base64",
+   "content": "H4sIAAAAAAACE5WQzW6DMBCEz+YpVsqFSm1CD71U6oGQqkFKqCtERI8GFmLVsSPYFPH2tUml9DdqfbHWO55vdtkDzwIW8QzCupZa0sCSbB2eKtuH8SVeeKMWcmDB1fUNCxhLZqHnrbBBXd16HtiWPXeQoqptlT6nroqM1liSNBqoFa/YdlI3wKMYQXTQo1Lupi1CuuYgNWFbHr9AgdQj6mMAbSrswMdpM72EJx7PMh5fWEzyuLj/F+ZHxChcmo5g3sqqsaRe0lZqECe6hfHl/O8ziW+u4NOwl6VQahij2MW7EXh+xnV3UCT3Co9mxXs638UzB/qodI5fiaN9nP9uLwh2Ti7AlZ8xbrubyZm/UBhdYQUdEpgaJla+kvql894A/Lryz1gCAAA="
+  },
+  {
+   "id": "kernel_log",
+   "kind": "command",
+   "command": [
+    "dmesg"
+   ],
+   "gpu_index": null,
+   "status": "blocked",
+   "exit_code": 1,
+   "started_at": "2026-10-31T11:59:31.000Z",
+   "duration_ms": 5,
+   "redactions": [],
+   "stderr": "dmesg: read kernel buffer failed: Operation not permitted",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "encoding": "gzip+base64",
+   "content": "H4sIAAAAAAACEwMAAAAAAAAAAAA="
+  },
+  {
+   "id": "nvml_snapshot",
+   "kind": "library",
+   "command": [
+    "nvml"
+   ],
+   "gpu_index": null,
+   "status": "ok",
+   "exit_code": null,
+   "started_at": "2026-10-31T11:59:31.000Z",
+   "duration_ms": 0,
+   "redactions": [],
+   "stderr": null,
+   "sha256": "3fe6e9cc6d0313d4242f073e26103ef4c3a30821b096c5aa55cf9575c2a2e91e",
+   "bytes": 538,
+   "encoding": "gzip+base64",
+   "content": "H4sIAAAAAAACE11Q0Y6DIBB89ysMuce7BhE99FcuF7LItiVFMIj2mqb/fljb1JSEh5nJ7szsNcuJxtl0OJI2/8ny/Jp+ThS4k4QZjAVlrImXpN6VnBzN4ZgQ/Vyh9ecN6uEvoZo/sfMON/IAIRqwC7MQtztNeux9uMjoI1ipLvGeRVSiaUpeNWwdJm62xp1eOT4wBB8STiZRjtMw+BBRk4eVxpjSL3LvuxPZ2A2dkWoapdGLSh+v5UVL6Y6u8yRgD8OAWgZ/Hl+mnQ8BuwjKbmvtkxMu2/ZgR3x2RaeNO7yxk3tbsQk2TWskPemvgBq6VKddSDkegVV1S2FPoWYIvFOlwkKD+q5QlbzmjYZKcKUYCEqxZLzjDIUSAqmoC8EACsqWK9yy/DfZpXP2Vs4YRuPdYlqwXcWqXcG/d7Qi2e0fHRQWvBoCAAA="
+  }
+ ]
+}

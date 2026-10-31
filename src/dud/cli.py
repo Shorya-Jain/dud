@@ -5,11 +5,12 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, model, report
+from . import __version__, history, model, report
 from . import text as T
 from .collect import UnknownGpu, collect
 from .model import DudError
 from .probe import get_probe
+from .registry import Client, api_url, delete_credentials, github_device_flow, load_credentials, save_credentials
 
 
 def parse_gpus(value: str | None) -> list | None:
@@ -19,7 +20,7 @@ def parse_gpus(value: str | None) -> list | None:
         out = sorted({int(x) for x in value.split(",") if x.strip()})
     except ValueError:
         raise DudError(T.BAD_GPUS_FLAG)
-    if not out:
+    if not out or out[0] < 0:
         raise DudError(T.BAD_GPUS_FLAG)
     return out
 
@@ -36,10 +37,15 @@ def cmd_quick(args) -> int:
     except UnknownGpu as e:
         raise DudError(T.GPU_NOT_FOUND.format(missing=",".join(map(str, e.missing)),
                                               available=",".join(map(str, e.available)) or T.NONE))
+    if not args.offline and doc["gpus"]:
+        doc["registry"] = history.fetch(doc)
+        history.compare(doc)
     folder = model.save_result(doc, Path(args.out_dir), report.render(doc))
     print()
     if doc["gpus"]:
         print(report.terminal_summary(doc))
+        for line in report.registry_lines(doc):
+            print(line)
     else:
         print(T.NO_GPUS)
     print()
@@ -47,6 +53,14 @@ def cmd_quick(args) -> int:
     print(T.REPORT_WRITTEN.format(path=folder / "report.md"))
     print(T.RAW_WRITTEN.format(path=folder / "raw"))
     return 0 if doc["gpus"] else 1
+
+
+def cmd_full(args) -> int:
+    from .fulltest import run_full
+
+    if args.load_minutes < 1:
+        raise DudError(T.BAD_LOAD_MINUTES)
+    return run_full(args, get_probe(), parse_gpus(args.gpus))
 
 
 def cmd_report(args) -> int:
@@ -59,9 +73,40 @@ def cmd_report(args) -> int:
     return 0
 
 
-def cmd_not_in_version(args) -> int:
-    print(T.COMMAND_NOT_IN_VERSION.format(name=args.command), file=sys.stderr)
-    return 2
+def cmd_login(args) -> int:
+    client = Client(token="")
+    client_id = client.config()["github_client_id"]
+
+    def show(code, uri):
+        print(T.LOGIN_OPEN.format(uri=uri))
+        print(T.LOGIN_CODE.format(code=code))
+        print(T.LOGIN_WAIT)
+
+    github_token = github_device_flow(client_id, show)
+    resp = client.login(github_token)
+    path = save_credentials(client.base, resp["token"], resp["account"]["github_login"])
+    print(T.LOGIN_DONE.format(login=resp["account"]["github_login"], path=path))
+    if resp["account"].get("new_github_account"):
+        print(T.LOGIN_NEW_ACCOUNT)
+    return 0
+
+
+def cmd_logout(args) -> int:
+    print(T.LOGOUT_DONE if delete_credentials() else T.LOGOUT_NONE)
+    return 0
+
+
+def cmd_status(args) -> int:
+    if not load_credentials():
+        raise DudError(T.NOT_LOGGED_IN)
+    me = Client().me()
+    a = me["account"]
+    print(T.STATUS_ACCOUNT.format(login=a["github_login"], url=api_url()))
+    print(T.STATUS_ACCESS.format(date=a["access_until"][:10]) if a["has_access"] else T.STATUS_NO_ACCESS)
+    print(T.STATUS_LOOKUPS.format(used=me["lookups_today"], quota=me["lookup_quota"]))
+    if a["status"] != "active":
+        print(T.STATUS_QUARANTINED)
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -76,6 +121,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     quick = sub.add_parser("quick", help=T.HELP["quick"])
     common(quick)
+    quick.add_argument("--offline", action="store_true", help=T.HELP["offline"])
     quick.set_defaults(func=cmd_quick)
 
     full = sub.add_parser("full", help=T.HELP["full"])
@@ -83,10 +129,11 @@ def build_parser() -> argparse.ArgumentParser:
     full.add_argument("--no-submit", action="store_true", help=T.HELP["no_submit"])
     full.add_argument("--skip-dcgm", action="store_true", help=T.HELP["skip_dcgm"])
     full.add_argument("--load-minutes", type=int, default=15, help=T.HELP["load_minutes"])
-    full.set_defaults(func=cmd_not_in_version)
+    full.set_defaults(func=cmd_full)
 
-    login = sub.add_parser("login", help=T.HELP["login"])
-    login.set_defaults(func=cmd_not_in_version)
+    sub.add_parser("login", help=T.HELP["login"]).set_defaults(func=cmd_login)
+    sub.add_parser("logout", help=T.HELP["logout"]).set_defaults(func=cmd_logout)
+    sub.add_parser("status", help=T.HELP["status"]).set_defaults(func=cmd_status)
 
     rep = sub.add_parser("report", help=T.HELP["report"])
     rep.add_argument("file", help=T.HELP["report_file"])
@@ -106,3 +153,6 @@ def main(argv=None) -> int:
     except DudError as e:
         print(str(e), file=sys.stderr)
         return 1
+    except KeyboardInterrupt:
+        print(T.STOPPED, file=sys.stderr)
+        return 130

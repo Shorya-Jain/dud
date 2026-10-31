@@ -1,0 +1,97 @@
+{
+ "mix32": [
+  [
+   0,
+   0
+  ],
+  [
+   1,
+   1198589870
+  ],
+  [
+   3735928559,
+   2895963089
+  ],
+  [
+   4294967295,
+   121542800
+  ]
+ ],
+ "h": [
+  [
+   [
+    3197183565,
+    3,
+    7
+   ],
+   143228634
+  ],
+  [
+   [
+    123,
+    1
+   ],
+   2102051666
+  ]
+ ],
+ "params": {
+  "m": 4,
+  "n": 3,
+  "k": 8,
+  "pool": 2,
+  "batch": 2
+ },
+ "nonce": "test-nonce",
+ "card_id": "abababababababababababababababababababababababababababababababab",
+ "seed": 3197183565,
+ "plans": [
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   0
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   1
+  ]
+ ],
+ "digests": [
+  2628431655,
+  1911680503,
+  1531848154,
+  1888991335,
+  46477782
+ ],
+ "merkle_root": "72cf1f32afd0b025bfeb869d7977c47448fa70e3df51a2f94f93a3f2edb800b4",
+ "proof_j3": [
+  "d78b1c26298a001e956415e6f46f5bcffe38b4c9e2bda836aa5e2cd912365ece",
+  "a8fdc093c0ccd2fce3d78387e0473b1ba014bc49ed7474fc94d91c5bc4e5da8c",
+  "8359c661c2ab8c20b6144a4bda6994cdad0889ca5476401fb733f0112ac5f442"
+ ],
+ "product_j3": [
+  -4,
+  -1,
+  -3,
+  -2,
+  -1,
+  4,
+  0,
+  2,
+  5,
+  -1,
+  0,
+  -4
+ ],
+ "product_j3_b64": "/P////3//v///wQAAAACAAUA//8AAPz/"
+}

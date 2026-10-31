@@ -1,0 +1,8 @@
+{
+ "description": "The raw nvidia-smi XML is the same as in an earlier accepted submission.",
+ "setup": [
+  "h100_sxm_pending_remap"
+ ],
+ "status": "rejected",
+ "check": "replay"
+}

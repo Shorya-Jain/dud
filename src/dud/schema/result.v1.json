@@ -25,6 +25,7 @@
     "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
     "challenge": {"type": ["object", "null"], "description": "reserved: milestone 3 (nonce, Merkle roots, sampled entries)"},
     "attestation": {"type": ["object", "null"], "description": "reserved: GPU attestation report, when available"},
+    "registry": {"type": ["object", "null"], "description": "Optional. Quick test only: earlier registry readings of these cards. The registry ignores it."},
     "raw": {"type": "array", "items": {"$ref": "#/$defs/raw"}}
   },
   "$defs": {
