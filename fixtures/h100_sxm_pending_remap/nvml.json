@@ -1,0 +1,47 @@
+{
+  "nvml_version": "12.550.90.07",
+  "devices": [
+    {
+      "pci_bus_id": "00000000:18:00.0",
+      "uuid": "GPU-0bad0c0d-1e2f-4a5b-9c8d-7e6f5a4b3c2d",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 3,
+        "uncorrectable": 1,
+        "pending": true,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2556,
+        "high": 4,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    }
+  ]
+}

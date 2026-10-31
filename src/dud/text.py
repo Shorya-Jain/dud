@@ -1,0 +1,214 @@
+"""All user-facing text.
+
+Write in ASD-STE100 Simplified Technical English:
+- Use the terms in docs/GLOSSARY.md. Do not use the words in its "Do not use" column.
+- One instruction per sentence. Use the imperative for instructions. Use the active voice.
+- Keep each sentence to 20 words or fewer. tests/test_text_ste.py checks this.
+"""
+
+# --- CLI ---------------------------------------------------------------------
+
+MOCK_BANNER = "MOCK MODE: dud uses fixture data. These results are not from a real GPU."
+QUICK_START = "dud {version}: quick test started."
+COMMAND_NOT_IN_VERSION = "This version of dud does not have the '{name}' command. A later version will have it."
+RESULT_WRITTEN = "Result file: {path}"
+REPORT_WRITTEN = "Report: {path}"
+RAW_WRITTEN = "Raw output: {path}"
+NO_GPUS = "dud found no GPUs. Make sure that the NVIDIA driver is installed and that nvidia-smi operates."
+GPU_NOT_FOUND = "GPU {missing} is not on this node. Use GPU numbers from this list: {available}."
+BAD_GPUS_FLAG = "The --gpus value is not correct. Use GPU numbers with commas between them, for example 0,1."
+FIXTURE_NOT_FOUND = "dud cannot find the fixture '{name}'. Set DUD_FIXTURE to a fixture name or to a fixture folder."
+BAD_RESULT_FILE = "dud cannot read the file {path}. Make sure that the path is correct."
+NOT_A_RESULT_FILE = "The file {path} is not a dud result file."
+WRONG_SCHEMA_VERSION = "This result file uses schema version {found}. This version of dud reads schema version {expected}."
+
+HELP = {
+    "description": "Check the health of a rented NVIDIA data center GPU.",
+    "quick": "Read the identity and history of each GPU. This takes approximately 1 minute.",
+    "full": "Do the full test and send the result to the registry.",
+    "login": "Sign in with your GitHub account.",
+    "report": "Show the report for a saved result file.",
+    "report_file": "The result file (result.json).",
+    "report_out": "Write the report to this file.",
+    "provider": "The name of the provider that rents you this node, for example vast.ai.",
+    "gpus": "Examine only these GPUs, for example 0,1. Default: all GPUs.",
+    "out_dir": "Write results into this folder. Default: ./dud-results.",
+    "no_submit": "Do not send the result to the registry.",
+    "skip_dcgm": "Do not run the DCGM test.",
+    "load_minutes": "Run the load test for this number of minutes. Default: 15.",
+}
+
+SUMMARY_HEADERS = ("GPU", "Model", "Card ID", "Uncorrectable ECC (volatile)", "Pending row remap", "Blocked values")
+
+# --- Report ------------------------------------------------------------------
+
+REPORT_TITLE = "dud report"
+SECTION_TEST = "Test"
+SECTION_VERDICT = "Verdict"
+SECTION_NODE = "Node"
+SECTION_CONNECTIONS = "GPU connections"
+SECTION_IDENTITY = "Identity"
+SECTION_HISTORY = "History"
+SECTION_SNAPSHOT = "State at test start"
+SECTION_XID = "XID errors"
+SECTION_NOT_READ = "Values that dud could not read"
+SECTION_FINDINGS = "Findings"
+SECTION_VISIBILITY = "Visibility summary"
+
+NO_VERDICT = "This version of dud does not give a verdict."
+NODE_SUMMARY = "This node has {attached} GPUs. dud examined {examined} GPUs."
+CONNECTIONS_LEGEND = "NV followed by a number means NVLink with that number of links. SYS, NODE, PHB, PXB and PIX are PCIe paths."
+CONNECTIONS_NOT_READ = "dud could not read the GPU connections."
+CARD_ID_NOTE = "The card ID is the SHA-256 hash of the GPU UUID. The raw UUID and serial number do not leave this node."
+NO_XID = "The kernel log shows no XID errors for this GPU."
+XID_NOT_READ = "dud could not read the kernel log. XID errors for this GPU are unknown."
+ALL_READ = "dud read all values for this GPU."
+VISIBILITY_INTRO = "Each value has a status. A blocked value is a finding about the provider."
+DETAIL = "Details: `{detail}`"
+
+COL_ITEM = "Item"
+COL_VALUE = "Value"
+COL_STATUS = "Status"
+COL_SCOPE = "Scope"
+COL_XID = "XID"
+COL_UPTIME = "Kernel time (s)"
+COL_MESSAGE = "Message"
+SCOPE_NODE = "Node"
+SCOPE_GPU = "GPU {index}"
+
+RUN_LABELS = {
+    "mode": "Test type",
+    "dud_version": "dud version",
+    "started_at": "Start time (UTC)",
+    "duration": "Duration",
+    "provider": "Provider (from the user)",
+    "fixture": "Fixture",
+}
+MODES = {"quick": "Quick test", "full": "Full test"}
+NOT_GIVEN = "Not given"
+DURATION = "{minutes} min {seconds} s"
+
+YES = "Yes"
+NO = "No"
+NONE = "None"
+DASH = "-"
+NVLINK_VALUE = "{links_active} of {links_total} links are active"
+
+STATUS = {
+    "ok": "Available",
+    "blocked": "Blocked",
+    "not_supported": "Not supported",
+    "error": "Error",
+    "skipped": "Skipped",
+}
+STATUS_FROM_NVML = "Available (from NVML)"
+
+# Why a value has its status. Keys are the reason codes in the result file.
+REASONS = {
+    "not_in_output": "The nvidia-smi output does not include this value.",
+    "smi_na": "nvidia-smi shows N/A for this value.",
+    "smi_not_supported": "nvidia-smi shows that this GPU does not support this value.",
+    "smi_insufficient_permissions": "nvidia-smi does not have permission to read this value.",
+    "smi_error": "nvidia-smi shows an error for this value.",
+    "parse_failed": "dud cannot read the format of this value.",
+    "hidden_on_supported_model": "This GPU model records this value. nvidia-smi shows N/A, so the provider, VM or container blocks it.",
+    "ecc_disabled": "ECC mode is disabled on this GPU. The GPU does not record ECC errors or row remaps.",
+    "replaced_by_row_remap": "This GPU model uses row remaps, not retired pages.",
+    "unknown_model": "dud does not know this GPU model.",
+    "command_not_found": "The command is not installed on this node.",
+    "command_failed": "The command stopped with an error.",
+    "command_timeout": "The command did not stop in the time limit.",
+    "permission_denied": "The system does not give dud permission to read this value.",
+    "file_not_found": "The file for this value is not on this node.",
+    "file_empty": "The file for this value is empty.",
+    "kernel_log_empty": "The kernel log is empty, or this node does not keep a kernel log.",
+    "nvml_missing": "dud cannot load NVML. Install the nvidia-ml-py package and the NVIDIA driver.",
+    "nvml_not_supported": "NVML shows that this GPU does not support this value.",
+    "nvml_no_permission": "NVML does not have permission to read this value.",
+    "nvml_error": "NVML shows an error for this value.",
+    "gpu_not_in_nvml": "NVML does not show this GPU.",
+    "from_nvml": "nvidia-smi does not show this value. dud read it from NVML.",
+}
+REASON_UNKNOWN = "dud has no explanation for this status."
+
+FINDINGS = {
+    "smi_nvml_mismatch": "nvidia-smi and NVML show different values for '{label}'.",
+    "duplicate_card_id": "Two GPUs have the same card ID.",
+    "no_gpus": "dud found no GPUs.",
+}
+FINDING_UNKNOWN = "dud recorded the finding '{code}'."
+
+# Labels for each value. Keys are paths inside a GPU entry or inside "host".
+LABELS = {
+    "card.uuid_sha256": "Card ID",
+    "card.serial_sha256": "Serial ID",
+    "identity.name": "Model name",
+    "identity.model_key": "dud model key",
+    "identity.form_factor": "Form factor",
+    "identity.architecture": "Architecture",
+    "identity.vbios": "VBIOS version",
+    "identity.board_part_number": "Board part number",
+    "identity.pci_device_id": "PCI device ID",
+    "identity.pci_subsystem_id": "PCI subsystem ID",
+    "identity.inforom_image": "InfoROM image version",
+    "identity.gsp_firmware": "GSP firmware version",
+    "identity.memory_total_mib": "Total memory",
+    "identity.power_limit_default_w": "Default power limit",
+    "identity.power_limit_current_w": "Current power limit",
+    "identity.power_limit_max_w": "Maximum power limit",
+    "identity.pcie.gen_max": "Maximum PCIe link generation",
+    "identity.pcie.gen_current": "Current PCIe link generation",
+    "identity.pcie.width_max": "Maximum PCIe link width",
+    "identity.pcie.width_current": "Current PCIe link width",
+    "identity.nvlink": "NVLink",
+    "identity.mig_mode": "MIG mode",
+    "identity.persistence_mode": "Persistence mode",
+    "identity.compute_mode": "Compute mode",
+    "identity.max_clocks.sm_mhz": "Maximum SM clock",
+    "identity.max_clocks.mem_mhz": "Maximum memory clock",
+    "identity.fabric_state": "NVLink fabric state",
+    "history.ecc_mode": "ECC mode",
+    "history.ecc_mode_pending": "ECC mode after the next GPU reset",
+    "history.ecc.volatile.correctable": "Correctable ECC errors (volatile count)",
+    "history.ecc.volatile.uncorrectable": "Uncorrectable ECC errors (volatile count)",
+    "history.ecc.volatile.detail": "ECC error details (volatile count)",
+    "history.ecc.aggregate.correctable": "Correctable ECC errors (aggregate count)",
+    "history.ecc.aggregate.uncorrectable": "Uncorrectable ECC errors (aggregate count)",
+    "history.ecc.aggregate.detail": "ECC error details (aggregate count)",
+    "history.ecc.aggregate_sram_sources": "SRAM sources of uncorrectable ECC errors (aggregate count)",
+    "history.row_remap.correctable": "Row remaps for correctable errors",
+    "history.row_remap.uncorrectable": "Row remaps for uncorrectable errors",
+    "history.row_remap.pending": "Pending row remap",
+    "history.row_remap.failed": "Failed row remap",
+    "history.row_remap.bank_availability.max": "Bank availability: maximum",
+    "history.row_remap.bank_availability.high": "Bank availability: high",
+    "history.row_remap.bank_availability.partial": "Bank availability: partial",
+    "history.row_remap.bank_availability.low": "Bank availability: low",
+    "history.row_remap.bank_availability.none": "Bank availability: none",
+    "history.retired_pages.correctable": "Retired pages (multiple correctable errors)",
+    "history.retired_pages.uncorrectable": "Retired pages (uncorrectable errors)",
+    "history.retired_pages.pending": "Pending retired page",
+    "history.xid_events": "XID errors",
+    "snapshot.gpu_temp_c": "GPU temperature",
+    "snapshot.memory_temp_c": "Memory temperature",
+    "snapshot.power_draw_w": "Power draw",
+    "snapshot.performance_state": "Performance state",
+    "snapshot.reset_required": "GPU reset required",
+    "snapshot.pcie_replay_count": "PCIe replay count",
+    "snapshot.throttle_reasons_active": "Active throttle reasons",
+    "driver_version": "Driver version",
+    "cuda_driver_version": "CUDA version (driver)",
+    "nvml_version": "NVML version",
+    "smi_timestamp": "nvidia-smi time",
+    "attached_gpus": "GPUs on this node",
+    "os": "Operating system",
+    "kernel": "Linux kernel",
+    "cpu_model": "CPU model",
+    "environment.container": "Container",
+    "environment.virtualization": "VM type",
+    "environment.dmi_vendor": "System manufacturer",
+    "environment.dmi_product": "System product name",
+    "environment.is_root": "Root user",
+    "kernel_log": "Kernel log",
+    "topology": "GPU connections",
+}

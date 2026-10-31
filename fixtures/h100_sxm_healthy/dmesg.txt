@@ -1,0 +1,4 @@
+[    0.000000] Linux version 5.15.0-105-generic (buildd@lcy02-amd64-007)
+[    1.204512] systemd[1]: Set hostname to <secret-host-01>.
+[    4.882910] nvidia: loading out-of-tree module taints kernel.
+[    5.017334] NVRM: loading NVIDIA UNIX x86_64 Kernel Module  550.90.07  Fri May 31 09:35:42 UTC 2024

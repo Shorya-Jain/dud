@@ -1,0 +1,33 @@
+{
+  "nvml_version": "12.550.54.15",
+  "devices": [
+    {
+      "pci_bus_id": "00000000:17:00.0",
+      "uuid": "GPU-c0ffee00-0000-4abc-9def-0123456789ab",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "$error": "no_permission"
+      },
+      "bank_availability": {
+        "$error": "no_permission"
+      },
+      "nvlink": {
+        "$error": "not_supported"
+      }
+    },
+    {
+      "pci_bus_id": "00000000:65:00.0",
+      "uuid": "GPU-c0ffee00-0001-4abc-9def-0123456789ab",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "$error": "no_permission"
+      },
+      "bank_availability": {
+        "$error": "no_permission"
+      },
+      "nvlink": {
+        "$error": "not_supported"
+      }
+    }
+  ]
+}

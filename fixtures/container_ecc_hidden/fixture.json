@@ -1,0 +1,47 @@
+{
+  "description": "2x H100 PCIe in a Kubernetes pod in a VM. ECC and row remap data show N/A. Not root. No kernel log.",
+  "synthetic": true,
+  "commands": {
+    "nvidia-smi -q -x": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-q-x.xml"
+    },
+    "nvidia-smi topo -m": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-topo-m.txt"
+    },
+    "dmesg": {
+      "exit_code": 1,
+      "stderr": "dmesg: read kernel buffer failed: Operation not permitted\n"
+    },
+    "journalctl -k --no-pager -o short-monotonic": {
+      "exit_code": 0,
+      "stdout": "No journal files were found.\n-- No entries --\n"
+    },
+    "uname -r": {
+      "exit_code": 0,
+      "stdout": "6.2.0-39-generic\n"
+    },
+    "systemd-detect-virt": {
+      "exit_code": 0,
+      "stdout": "kvm\n"
+    }
+  },
+  "nvml_file": "nvml.json",
+  "files": {
+    "/etc/os-release": {
+      "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"
+    },
+    "/proc/cpuinfo": {
+      "text": "model name\t: Intel(R) Xeon(R) Platinum 8462Y+\nflags\t\t: fpu hypervisor\n"
+    },
+    "/sys/class/dmi/id/sys_vendor": {
+      "error": "permission"
+    }
+  },
+  "env": {
+    "KUBERNETES_SERVICE_HOST": "10.96.0.1"
+  },
+  "euid": 1000,
+  "utc_offset_s": -25200
+}

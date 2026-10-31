@@ -1,0 +1,46 @@
+{
+  "description": "8x H100 SXM5 80GB, driver 550, KVM VM, root, readable kernel log, NVLink NV18 between all GPUs.",
+  "synthetic": true,
+  "commands": {
+    "nvidia-smi -q -x": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-q-x.xml"
+    },
+    "nvidia-smi topo -m": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-topo-m.txt"
+    },
+    "dmesg": {
+      "exit_code": 0,
+      "stdout_file": "dmesg.txt"
+    },
+    "uname -r": {
+      "exit_code": 0,
+      "stdout": "5.15.0-105-generic\n"
+    },
+    "systemd-detect-virt": {
+      "exit_code": 0,
+      "stdout": "kvm\n"
+    }
+  },
+  "nvml_file": "nvml.json",
+  "files": {
+    "/etc/os-release": {
+      "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"
+    },
+    "/proc/cpuinfo": {
+      "text": "processor\t: 0\nmodel name\t: Intel(R) Xeon(R) Platinum 8480+\nflags\t\t: fpu vme hypervisor avx512f\n"
+    },
+    "/sys/class/dmi/id/sys_vendor": {
+      "text": "QEMU\n"
+    },
+    "/sys/class/dmi/id/product_name": {
+      "text": "Standard PC (Q35 + ICH9, 2009)\n"
+    },
+    "/proc/1/cgroup": {
+      "text": "0::/init.scope\n"
+    }
+  },
+  "euid": 0,
+  "utc_offset_s": 0
+}

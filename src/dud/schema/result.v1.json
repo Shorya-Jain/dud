@@ -1,0 +1,348 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dud:result:v1",
+  "title": "dud result, schema version 1",
+  "description": "One run of dud on one node. See docs/DESIGN.md. Fields marked 'reserved' are null until a later milestone fills them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "run", "host", "gpus", "node", "findings", "challenge", "attestation", "raw"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "dud.result"},
+    "run": {"$ref": "#/$defs/run"},
+    "host": {"$ref": "#/$defs/host"},
+    "gpus": {"type": "array", "maxItems": 16, "items": {"$ref": "#/$defs/gpu"}},
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gpu_count", "p2p_bandwidth", "verdict"],
+      "properties": {
+        "gpu_count": {"type": "integer", "minimum": 0},
+        "p2p_bandwidth": {"type": ["object", "null"], "description": "reserved: milestone 2"},
+        "verdict": {"type": ["object", "null"], "description": "reserved: milestone 2"}
+      }
+    },
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "challenge": {"type": ["object", "null"], "description": "reserved: milestone 3 (nonce, Merkle roots, sampled entries)"},
+    "attestation": {"type": ["object", "null"], "description": "reserved: GPU attestation report, when available"},
+    "raw": {"type": "array", "items": {"$ref": "#/$defs/raw"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"},
+
+    "field": {
+      "description": "One reading with its visibility. value is null unless status is ok.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "status", "source", "raw_ref", "reason", "detail"],
+      "properties": {
+        "value": {},
+        "status": {"enum": ["ok", "blocked", "not_supported", "error", "skipped"]},
+        "source": {"enum": ["smi_xml", "smi_topo", "nvml", "kernel_log", "os", "derived", "dcgm", "torch", "none"]},
+        "raw_ref": {"type": ["string", "null"]},
+        "reason": {"type": ["string", "null"], "pattern": "^[a-z0-9_]+$"},
+        "detail": {"type": ["string", "null"], "maxLength": 500}
+      },
+      "if": {"properties": {"status": {"const": "ok"}}},
+      "then": {},
+      "else": {"properties": {"value": {"type": "null"}, "reason": {"type": "string"}}}
+    },
+    "f_str": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["string", "null"]}}}]},
+    "f_int": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["integer", "null"]}}}]},
+    "f_count": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["integer", "null"], "minimum": 0}}}]},
+    "f_num": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["number", "null"]}}}]},
+    "f_bool": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["boolean", "null"]}}}]},
+    "f_obj": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["object", "null"]}}}]},
+    "f_hash": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}}}]},
+    "f_strlist": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {"type": ["array", "null"], "items": {"type": "string"}}}}]},
+    "f_nvlink": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {
+      "oneOf": [{"type": "null"}, {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["links_total", "links_active", "states"],
+        "properties": {
+          "links_total": {"type": "integer", "minimum": 0},
+          "links_active": {"type": "integer", "minimum": 0},
+          "states": {"type": "array", "items": {"type": "boolean"}}
+        }
+      }]
+    }}}]},
+    "f_xid": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["xid", "pci", "uptime_s", "message"],
+        "properties": {
+          "xid": {"type": "integer"},
+          "pci": {"type": "string"},
+          "uptime_s": {"type": ["number", "null"]},
+          "message": {"type": "string"}
+        }
+      }
+    }}}]},
+    "f_topology": {"allOf": [{"$ref": "#/$defs/field"}, {"properties": {"value": {
+      "oneOf": [{"type": "null"}, {
+        "type": "object",
+        "required": ["columns", "rows"],
+        "properties": {
+          "columns": {"type": "array", "items": {"type": "string"}},
+          "rows": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": {"type": "string"}}}
+        }
+      }]
+    }}}]},
+
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "detail"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "severity": {"enum": ["info", "warn"]},
+        "path": {"type": ["string", "null"]},
+        "detail": {"type": ["string", "null"], "maxLength": 1000}
+      }
+    },
+
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "mode", "dud_version", "mock", "fixture", "started_at", "finished_at",
+                   "duration_s", "utc_offset_s", "options", "provider"],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"},
+        "mode": {"enum": ["quick", "full"]},
+        "dud_version": {"type": "string"},
+        "mock": {"type": "boolean"},
+        "fixture": {"type": ["string", "null"]},
+        "started_at": {"$ref": "#/$defs/timestamp"},
+        "finished_at": {"$ref": "#/$defs/timestamp"},
+        "duration_s": {"type": "number", "minimum": 0},
+        "utc_offset_s": {"type": ["integer", "null"]},
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["gpus", "load_minutes", "skip_dcgm", "submit"],
+          "properties": {
+            "gpus": {"type": ["array", "null"], "items": {"type": "integer", "minimum": 0}},
+            "load_minutes": {"type": ["integer", "null"], "minimum": 0},
+            "skip_dcgm": {"type": "boolean"},
+            "submit": {"type": "boolean"}
+          }
+        },
+        "provider": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reported"],
+          "properties": {"reported": {"type": ["string", "null"], "maxLength": 100}}
+        }
+      }
+    },
+
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driver_version", "cuda_driver_version", "nvml_version", "smi_timestamp", "attached_gpus",
+                   "os", "kernel", "cpu_model", "environment", "kernel_log", "topology"],
+      "properties": {
+        "driver_version": {"$ref": "#/$defs/f_str"},
+        "cuda_driver_version": {"$ref": "#/$defs/f_str"},
+        "nvml_version": {"$ref": "#/$defs/f_str"},
+        "smi_timestamp": {"$ref": "#/$defs/f_str"},
+        "attached_gpus": {"$ref": "#/$defs/f_count"},
+        "os": {"$ref": "#/$defs/f_str"},
+        "kernel": {"$ref": "#/$defs/f_str"},
+        "cpu_model": {"$ref": "#/$defs/f_str"},
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["container", "virtualization", "dmi_vendor", "dmi_product", "is_root"],
+          "properties": {
+            "container": {"$ref": "#/$defs/f_str"},
+            "virtualization": {"$ref": "#/$defs/f_str"},
+            "dmi_vendor": {"$ref": "#/$defs/f_str"},
+            "dmi_product": {"$ref": "#/$defs/f_str"},
+            "is_root": {"$ref": "#/$defs/f_bool"}
+          }
+        },
+        "kernel_log": {"$ref": "#/$defs/f_str"},
+        "topology": {"$ref": "#/$defs/f_topology"}
+      }
+    },
+
+    "ecc_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["correctable", "uncorrectable", "detail"],
+      "properties": {
+        "correctable": {"$ref": "#/$defs/f_count"},
+        "uncorrectable": {"$ref": "#/$defs/f_count"},
+        "detail": {"$ref": "#/$defs/f_obj"}
+      }
+    },
+
+    "gpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "pci_bus_id", "card", "identity", "history", "snapshot", "findings",
+                   "diag", "perf", "load", "verdict"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0},
+        "pci_bus_id": {"type": "string"},
+        "card": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hash_scheme", "uuid_sha256", "serial_sha256"],
+          "properties": {
+            "hash_scheme": {"const": "dud-card-v1"},
+            "uuid_sha256": {"$ref": "#/$defs/f_hash"},
+            "serial_sha256": {"$ref": "#/$defs/f_hash"}
+          }
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "model_key", "form_factor", "architecture", "vbios", "board_part_number",
+                       "pci_device_id", "pci_subsystem_id", "inforom_image", "gsp_firmware", "memory_total_mib",
+                       "power_limit_default_w", "power_limit_current_w", "power_limit_max_w", "pcie",
+                       "mig_mode", "persistence_mode", "compute_mode", "max_clocks", "fabric_state", "nvlink"],
+          "properties": {
+            "name": {"$ref": "#/$defs/f_str"},
+            "model_key": {"$ref": "#/$defs/f_str"},
+            "form_factor": {"$ref": "#/$defs/f_str"},
+            "architecture": {"$ref": "#/$defs/f_str"},
+            "vbios": {"$ref": "#/$defs/f_str"},
+            "board_part_number": {"$ref": "#/$defs/f_str"},
+            "pci_device_id": {"$ref": "#/$defs/f_str"},
+            "pci_subsystem_id": {"$ref": "#/$defs/f_str"},
+            "inforom_image": {"$ref": "#/$defs/f_str"},
+            "gsp_firmware": {"$ref": "#/$defs/f_str"},
+            "memory_total_mib": {"$ref": "#/$defs/f_count"},
+            "power_limit_default_w": {"$ref": "#/$defs/f_num"},
+            "power_limit_current_w": {"$ref": "#/$defs/f_num"},
+            "power_limit_max_w": {"$ref": "#/$defs/f_num"},
+            "pcie": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["gen_max", "gen_current", "width_max", "width_current"],
+              "properties": {
+                "gen_max": {"$ref": "#/$defs/f_count"},
+                "gen_current": {"$ref": "#/$defs/f_count"},
+                "width_max": {"$ref": "#/$defs/f_count"},
+                "width_current": {"$ref": "#/$defs/f_count"}
+              }
+            },
+            "mig_mode": {"$ref": "#/$defs/f_bool"},
+            "persistence_mode": {"$ref": "#/$defs/f_bool"},
+            "compute_mode": {"$ref": "#/$defs/f_str"},
+            "max_clocks": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["sm_mhz", "mem_mhz"],
+              "properties": {"sm_mhz": {"$ref": "#/$defs/f_count"}, "mem_mhz": {"$ref": "#/$defs/f_count"}}
+            },
+            "fabric_state": {"$ref": "#/$defs/f_str"},
+            "nvlink": {"$ref": "#/$defs/f_nvlink"}
+          }
+        },
+        "history": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ecc_mode", "ecc_mode_pending", "ecc", "row_remap", "retired_pages", "xid_events"],
+          "properties": {
+            "ecc_mode": {"$ref": "#/$defs/f_bool"},
+            "ecc_mode_pending": {"$ref": "#/$defs/f_bool"},
+            "ecc": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["volatile", "aggregate", "aggregate_sram_sources"],
+              "properties": {
+                "volatile": {"$ref": "#/$defs/ecc_counts"},
+                "aggregate": {"$ref": "#/$defs/ecc_counts"},
+                "aggregate_sram_sources": {"$ref": "#/$defs/f_obj"}
+              }
+            },
+            "row_remap": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["correctable", "uncorrectable", "pending", "failed", "bank_availability"],
+              "properties": {
+                "correctable": {"$ref": "#/$defs/f_count"},
+                "uncorrectable": {"$ref": "#/$defs/f_count"},
+                "pending": {"$ref": "#/$defs/f_bool"},
+                "failed": {"$ref": "#/$defs/f_bool"},
+                "bank_availability": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["max", "high", "partial", "low", "none"],
+                  "properties": {
+                    "max": {"$ref": "#/$defs/f_count"},
+                    "high": {"$ref": "#/$defs/f_count"},
+                    "partial": {"$ref": "#/$defs/f_count"},
+                    "low": {"$ref": "#/$defs/f_count"},
+                    "none": {"$ref": "#/$defs/f_count"}
+                  }
+                }
+              }
+            },
+            "retired_pages": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["correctable", "uncorrectable", "pending"],
+              "properties": {
+                "correctable": {"$ref": "#/$defs/f_count"},
+                "uncorrectable": {"$ref": "#/$defs/f_count"},
+                "pending": {"$ref": "#/$defs/f_bool"}
+              }
+            },
+            "xid_events": {"$ref": "#/$defs/f_xid"}
+          }
+        },
+        "snapshot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["gpu_temp_c", "memory_temp_c", "power_draw_w", "performance_state", "reset_required",
+                       "pcie_replay_count", "throttle_reasons_active"],
+          "properties": {
+            "gpu_temp_c": {"$ref": "#/$defs/f_int"},
+            "memory_temp_c": {"$ref": "#/$defs/f_int"},
+            "power_draw_w": {"$ref": "#/$defs/f_num"},
+            "performance_state": {"$ref": "#/$defs/f_str"},
+            "reset_required": {"$ref": "#/$defs/f_bool"},
+            "pcie_replay_count": {"$ref": "#/$defs/f_count"},
+            "throttle_reasons_active": {"$ref": "#/$defs/f_strlist"}
+          }
+        },
+        "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+        "diag": {"type": ["object", "null"], "description": "reserved: milestone 2 (DCGM)"},
+        "perf": {"type": ["object", "null"], "description": "reserved: milestone 2 (TFLOPS, HBM and GPU-to-GPU bandwidth)"},
+        "load": {"type": ["object", "null"], "description": "reserved: milestone 2 (per-second series during the load test)"},
+        "verdict": {"type": ["object", "null"], "description": "reserved: milestone 2"}
+      }
+    },
+
+    "raw": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "command", "gpu_index", "status", "exit_code", "started_at", "duration_ms",
+                   "redactions", "stderr", "sha256", "bytes", "encoding", "content"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "kind": {"enum": ["command", "library", "file"]},
+        "command": {"type": "array", "items": {"type": "string"}},
+        "gpu_index": {"type": ["integer", "null"]},
+        "status": {"enum": ["ok", "blocked", "not_supported", "error", "skipped"]},
+        "exit_code": {"type": ["integer", "null"]},
+        "started_at": {"$ref": "#/$defs/timestamp"},
+        "duration_ms": {"type": "integer", "minimum": 0},
+        "redactions": {"type": "array", "items": {"type": "string"}},
+        "stderr": {"type": ["string", "null"], "maxLength": 4000},
+        "sha256": {"$ref": "#/$defs/sha256", "description": "SHA-256 of the UTF-8 text after redaction, before compression."},
+        "bytes": {"type": "integer", "minimum": 0},
+        "encoding": {"const": "gzip+base64"},
+        "content": {"type": "string"}
+      }
+    }
+  }
+}

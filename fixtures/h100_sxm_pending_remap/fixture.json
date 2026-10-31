@@ -1,0 +1,40 @@
+{
+  "description": "1x H100 SXM5 80GB (one GPU of an 8-GPU board), pending row remap, uncorrectable ECC errors, XID 94 and 63.",
+  "synthetic": true,
+  "commands": {
+    "nvidia-smi -q -x": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-q-x.xml"
+    },
+    "nvidia-smi topo -m": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-topo-m.txt"
+    },
+    "dmesg": {
+      "exit_code": 0,
+      "stdout_file": "dmesg.txt"
+    },
+    "uname -r": {
+      "exit_code": 0,
+      "stdout": "5.15.0-105-generic\n"
+    },
+    "systemd-detect-virt": {
+      "exit_code": 0,
+      "stdout": "kvm\n"
+    }
+  },
+  "nvml_file": "nvml.json",
+  "files": {
+    "/etc/os-release": {
+      "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"
+    },
+    "/proc/cpuinfo": {
+      "text": "model name\t: AMD EPYC 9454 48-Core Processor\nflags\t\t: fpu hypervisor\n"
+    }
+  },
+  "paths": [
+    "/.dockerenv"
+  ],
+  "euid": 0,
+  "utc_offset_s": 0
+}

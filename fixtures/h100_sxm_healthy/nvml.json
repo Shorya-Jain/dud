@@ -1,0 +1,341 @@
+{
+  "nvml_version": "12.550.90.07",
+  "devices": [
+    {
+      "pci_bus_id": "00000000:18:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e500",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:2a:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e501",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:3a:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e502",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:5d:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e503",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:9a:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e504",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:ab:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e505",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:ba:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e506",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "pci_bus_id": "00000000:db:00.0",
+      "uuid": "GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e507",
+      "memory_total_bytes": 85520809984,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 2560,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "links_total": 18,
+        "links_active": 18,
+        "states": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    }
+  ]
+}

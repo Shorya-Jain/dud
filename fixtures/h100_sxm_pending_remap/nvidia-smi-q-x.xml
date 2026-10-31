@@ -1,0 +1,188 @@
+<?xml version="1.0" ?>
+<!DOCTYPE nvidia_smi_log SYSTEM "nvsmi_device_v12.dtd">
+<nvidia_smi_log>
+	<timestamp>Sat Oct 31 12:00:00 2026</timestamp>
+	<driver_version>550.90.07</driver_version>
+	<cuda_version>12.4</cuda_version>
+	<attached_gpus>1</attached_gpus>
+	<gpu id="00000000:18:00.0">
+		<product_name>NVIDIA H100 80GB HBM3</product_name>
+		<product_brand>NVIDIA</product_brand>
+		<product_architecture>Hopper</product_architecture>
+		<display_mode>Disabled</display_mode>
+		<display_active>Disabled</display_active>
+		<persistence_mode>Enabled</persistence_mode>
+		<mig_mode>
+			<current_mig>Disabled</current_mig>
+			<pending_mig>Disabled</pending_mig>
+		</mig_mode>
+		<mig_devices>
+			None
+		</mig_devices>
+		<accounting_mode>Disabled</accounting_mode>
+		<accounting_mode_buffer_size>4000</accounting_mode_buffer_size>
+		<serial>1652922009999</serial>
+		<uuid>GPU-0bad0c0d-1e2f-4a5b-9c8d-7e6f5a4b3c2d</uuid>
+		<minor_number>0</minor_number>
+		<vbios_version>96.00.99.00.01</vbios_version>
+		<multigpu_board>No</multigpu_board>
+		<board_id>0x1800</board_id>
+		<board_part_number>692-2G520-0200-000</board_part_number>
+		<gpu_module_id>1</gpu_module_id>
+		<inforom_version>
+			<img_version>G520.0200.00.05</img_version>
+			<oem_object>2.1</oem_object>
+			<ecc_object>7.16</ecc_object>
+			<pwr_object>N/A</pwr_object>
+		</inforom_version>
+		<gsp_firmware_version>550.90.07</gsp_firmware_version>
+		<gpu_virtualization_mode>
+			<virtualization_mode>None</virtualization_mode>
+			<host_vgpu_mode>N/A</host_vgpu_mode>
+		</gpu_virtualization_mode>
+		<gpu_reset_status>
+			<reset_required>Yes</reset_required>
+			<drain_and_reset_recommended>N/A</drain_and_reset_recommended>
+		</gpu_reset_status>
+		<pci>
+			<pci_bus>18</pci_bus>
+			<pci_device>00</pci_device>
+			<pci_domain>0000</pci_domain>
+			<pci_device_id>233010DE</pci_device_id>
+			<pci_bus_id>00000000:18:00.0</pci_bus_id>
+			<pci_sub_system_id>16C110DE</pci_sub_system_id>
+			<pci_gpu_link_info>
+				<pcie_gen>
+					<max_link_gen>5</max_link_gen>
+					<current_link_gen>5</current_link_gen>
+					<device_current_link_gen>5</device_current_link_gen>
+					<max_device_link_gen>5</max_device_link_gen>
+					<max_host_link_gen>5</max_host_link_gen>
+				</pcie_gen>
+				<link_widths>
+					<max_link_width>16x</max_link_width>
+					<current_link_width>16x</current_link_width>
+				</link_widths>
+			</pci_gpu_link_info>
+			<replay_counter>0</replay_counter>
+			<replay_rollover_counter>0</replay_rollover_counter>
+			<tx_util>0 KB/s</tx_util>
+			<rx_util>0 KB/s</rx_util>
+		</pci>
+		<fan_speed>N/A</fan_speed>
+		<performance_state>P0</performance_state>
+		<clocks_event_reasons>
+			<clocks_event_reason_gpu_idle>Active</clocks_event_reason_gpu_idle>
+			<clocks_event_reason_applications_clocks_setting>Not Active</clocks_event_reason_applications_clocks_setting>
+			<clocks_event_reason_sw_power_cap>Not Active</clocks_event_reason_sw_power_cap>
+			<clocks_event_reason_hw_slowdown>Not Active</clocks_event_reason_hw_slowdown>
+			<clocks_event_reason_hw_thermal_slowdown>Not Active</clocks_event_reason_hw_thermal_slowdown>
+			<clocks_event_reason_hw_power_brake_slowdown>Not Active</clocks_event_reason_hw_power_brake_slowdown>
+			<clocks_event_reason_sync_boost>Not Active</clocks_event_reason_sync_boost>
+			<clocks_event_reason_sw_thermal_slowdown>Not Active</clocks_event_reason_sw_thermal_slowdown>
+			<clocks_event_reason_display_clocks_setting>Not Active</clocks_event_reason_display_clocks_setting>
+		</clocks_event_reasons>
+		<fb_memory_usage>
+			<total>81559 MiB</total>
+			<reserved>328 MiB</reserved>
+			<used>0 MiB</used>
+			<free>81231 MiB</free>
+		</fb_memory_usage>
+		<compute_mode>Default</compute_mode>
+		<utilization>
+			<gpu_util>0 %</gpu_util>
+			<memory_util>0 %</memory_util>
+		</utilization>
+		<ecc_mode>
+			<current_ecc>Enabled</current_ecc>
+			<pending_ecc>Enabled</pending_ecc>
+		</ecc_mode>
+		<ecc_errors>
+			<volatile>
+				<sram_correctable>0</sram_correctable>
+				<sram_uncorrectable_parity>0</sram_uncorrectable_parity>
+				<sram_uncorrectable_secded>0</sram_uncorrectable_secded>
+				<dram_correctable>5</dram_correctable>
+				<dram_uncorrectable>2</dram_uncorrectable>
+			</volatile>
+			<aggregate>
+				<sram_correctable>0</sram_correctable>
+				<sram_uncorrectable_parity>0</sram_uncorrectable_parity>
+				<sram_uncorrectable_secded>0</sram_uncorrectable_secded>
+				<dram_correctable>41</dram_correctable>
+				<dram_uncorrectable>2</dram_uncorrectable>
+				<sram_threshold_exceeded>No</sram_threshold_exceeded>
+			</aggregate>
+			<aggregate_uncorrectable_sram_sources>
+				<sram_l2>0</sram_l2>
+				<sram_sm>0</sram_sm>
+				<sram_microcontroller>0</sram_microcontroller>
+				<sram_pcie>0</sram_pcie>
+				<sram_other>0</sram_other>
+			</aggregate_uncorrectable_sram_sources>
+		</ecc_errors>
+		<retired_pages>
+			<multiple_single_bit_retirement>
+				<retired_count>N/A</retired_count>
+				<retired_pagelist>N/A</retired_pagelist>
+			</multiple_single_bit_retirement>
+			<double_bit_retirement>
+				<retired_count>N/A</retired_count>
+				<retired_pagelist>N/A</retired_pagelist>
+			</double_bit_retirement>
+			<pending_blacklist>N/A</pending_blacklist>
+			<pending_retirement>N/A</pending_retirement>
+		</retired_pages>
+		<remapped_rows>
+			<remapped_row_corr>3</remapped_row_corr>
+			<remapped_row_unc>1</remapped_row_unc>
+			<remapped_row_pending>Yes</remapped_row_pending>
+			<remapped_row_failure>No</remapped_row_failure>
+			<remapped_row_histogram>
+				<row_remap_histogram_max>2556 bank(s)</row_remap_histogram_max>
+				<row_remap_histogram_high>4 bank(s)</row_remap_histogram_high>
+				<row_remap_histogram_partial>0 bank(s)</row_remap_histogram_partial>
+				<row_remap_histogram_low>0 bank(s)</row_remap_histogram_low>
+				<row_remap_histogram_none>0 bank(s)</row_remap_histogram_none>
+			</remapped_row_histogram>
+		</remapped_rows>
+		<temperature>
+			<gpu_temp>31 C</gpu_temp>
+			<gpu_temp_max_threshold>92 C</gpu_temp_max_threshold>
+			<gpu_temp_slow_threshold>89 C</gpu_temp_slow_threshold>
+			<memory_temp>38 C</memory_temp>
+		</temperature>
+		<gpu_power_readings>
+			<power_state>P0</power_state>
+			<power_draw>70.50 W</power_draw>
+			<current_power_limit>700.00 W</current_power_limit>
+			<requested_power_limit>700.00 W</requested_power_limit>
+			<default_power_limit>700.00 W</default_power_limit>
+			<min_power_limit>200.00 W</min_power_limit>
+			<max_power_limit>700.00 W</max_power_limit>
+		</gpu_power_readings>
+		<module_power_readings>
+			<power_state>P0</power_state>
+			<power_draw>N/A</power_draw>
+			<current_power_limit>N/A</current_power_limit>
+		</module_power_readings>
+		<clocks>
+			<graphics_clock>345 MHz</graphics_clock>
+			<sm_clock>345 MHz</sm_clock>
+			<mem_clock>2619 MHz</mem_clock>
+		</clocks>
+		<max_clocks>
+			<graphics_clock>1980 MHz</graphics_clock>
+			<sm_clock>1980 MHz</sm_clock>
+			<mem_clock>2619 MHz</mem_clock>
+		</max_clocks>
+		<fabric>
+			<state>Completed</state>
+			<status>Success</status>
+		</fabric>
+		<processes>
+		</processes>
+		<accounted_processes>
+		</accounted_processes>
+	</gpu>
+</nvidia_smi_log>

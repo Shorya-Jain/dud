@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dud-gpu"
+version = "0.1.0"
+description = "Check the health of a rented NVIDIA data center GPU."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "nvidia-ml-py>=12.535",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "jsonschema>=4.17",
+]
+
+[project.scripts]
+dud = "dud.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dud = ["schema/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

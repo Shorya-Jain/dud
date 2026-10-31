@@ -1,0 +1,39 @@
+{
+  "description": "1x A100 80GB PCIe, driver 525 (old XML format, no bank histogram in XML), Docker, kernel log blocked.",
+  "synthetic": true,
+  "commands": {
+    "nvidia-smi -q -x": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-q-x.xml"
+    },
+    "nvidia-smi topo -m": {
+      "exit_code": 0,
+      "stdout_file": "nvidia-smi-topo-m.txt"
+    },
+    "dmesg": {
+      "exit_code": 1,
+      "stderr": "dmesg: read kernel buffer failed: Operation not permitted\n"
+    },
+    "uname -r": {
+      "exit_code": 0,
+      "stdout": "5.4.0-150-generic\n"
+    }
+  },
+  "nvml_file": "nvml.json",
+  "files": {
+    "/etc/os-release": {
+      "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"
+    },
+    "/proc/cpuinfo": {
+      "text": "model name\t: AMD EPYC 7543 32-Core Processor\nflags\t\t: fpu sse2\n"
+    },
+    "/proc/1/cgroup": {
+      "text": "12:devices:/docker/3f9a1c\n"
+    }
+  },
+  "paths": [
+    "/.dockerenv"
+  ],
+  "euid": 0,
+  "utc_offset_s": 0
+}

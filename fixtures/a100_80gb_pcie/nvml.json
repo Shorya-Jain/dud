@@ -1,0 +1,26 @@
+{
+  "nvml_version": "12.525.147.05",
+  "devices": [
+    {
+      "pci_bus_id": "00000000:41:00.0",
+      "uuid": "GPU-a100a100-2b3c-4d5e-8f90-123456789abc",
+      "memory_total_bytes": 85899345920,
+      "remapped_rows": {
+        "correctable": 0,
+        "uncorrectable": 0,
+        "pending": false,
+        "failed": false
+      },
+      "bank_availability": {
+        "max": 640,
+        "high": 0,
+        "partial": 0,
+        "low": 0,
+        "none": 0
+      },
+      "nvlink": {
+        "$error": "not_supported"
+      }
+    }
+  ]
+}

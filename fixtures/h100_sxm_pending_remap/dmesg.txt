@@ -1,0 +1,4 @@
+[    5.017334] NVRM: loading NVIDIA UNIX x86_64 Kernel Module  550.90.07
+[ 8123.442190] NVRM: Xid (PCI:0000:18:00): 94, pid=51234, name=python3, Contained: CE User Channel (0x9). RST: No, D-RST: No
+[ 8123.442877] NVRM: Xid (PCI:0000:18:00): 63, pid='<unknown>', name=<unknown>, Row Remapper: New row (0x00000001c3f2a000) Marked for Remapping, reset gpu to activate.
+[ 9001.000001] NVRM: Xid (PCI:0000:2a:00): 79, pid=777, name=other_tenant_job, GPU has fallen off the bus.
