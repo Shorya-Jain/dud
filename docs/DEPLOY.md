@@ -154,6 +154,21 @@ To test without a change to the file, set `DUD_API_URL` to the Worker address.
 4. Show the flagged submissions: `python3 admin/dud_admin.py submissions`
 5. Read `admin/dud_admin.py` for all commands.
 
+## Step 11: Put the website on Cloudflare Pages
+
+The website is the folder `site/`. It is one HTML page with no build step.
+`site/_headers` adds security headers to every page.
+
+1. Go to the server folder: `cd ~/Documents/dud/server`
+2. Make the Pages project (one time only): `npx wrangler pages project create dud --production-branch main`
+3. Deploy the site: `npx wrangler pages deploy ../site --project-name dud --branch main`
+4. The output shows the address, for example `https://dud.pages.dev`. Open it in your browser.
+5. Make sure that the card ID tool shows a 64-character card ID.
+
+After a change to `site/index.html`, do item 3 again.
+
+The links on the website go to the GitHub repository. Make the repository public before you share the website. Before that, the links show "404" to other people.
+
 ## Change a setting
 
 1. Open `server/wrangler.toml`.

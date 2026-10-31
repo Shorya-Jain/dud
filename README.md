@@ -43,6 +43,7 @@ If PyTorch is not installed, dud asks before it installs it.
 `THREATS.md` tells how the registry stops fraud, and what it cannot stop.
 `docs/DEPLOY.md` tells how to put the registry on Cloudflare.
 `docs/API.md` lists the registry requests.
+The website is in `site/`. `docs/DEPLOY.md`, step 11, tells how to put it on Cloudflare Pages.
 
 ## What leaves the node
 

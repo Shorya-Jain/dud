@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>dud GPU registry</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Skip the 90-minute GPU test when someone already did it. dud checks a rented NVIDIA GPU against a shared registry in approximately 1 minute.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: an inspection record. Text column on the left, the example card report pinned on the right; one column on phones. */
+:root {
+  --paper: #eef1f5;
+  --sheet: #fbfcfd;
+  --ink: #131c2e;
+  --muted: #55607a;
+  --rule: #cfd6e2;
+  --accent: #2343c4;
+  --accent-soft: #e3e8fb;
+  --keep: #1f7a4d;
+  --kill: #b42323;
+  --unknown: #8a6a12;
+  --code-bg: #e6eaf1;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: clamp(2.1rem, 4.6vw, 3.4rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e131b; --sheet: #151c27; --ink: #dde3ec; --muted: #94a0b5; --rule: #2a3445;
+    --accent: #8ea4ff; --accent-soft: #1d2747; --keep: #5cc28f; --kill: #ff7b7b; --unknown: #e0b54a;
+    --code-bg: #1b2331; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e131b; --sheet: #151c27; --ink: #dde3ec; --muted: #94a0b5; --rule: #2a3445;
+  --accent: #8ea4ff; --accent-soft: #1d2747; --keep: #5cc28f; --kill: #ff7b7b; --unknown: #e0b54a;
+  --code-bg: #1b2331; color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+}
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, .mono { font-family: var(--mono); font-size: 0.92em; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 78%; line-height: 1.08; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--step-3); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: var(--step-2); font-weight: 750; }
+h3 { font-size: var(--step-1); font-weight: 700; font-stretch: 85%; }
+p { margin: 0; max-width: 64ch; }
+.label {
+  font-family: var(--mono); font-size: var(--step--1); text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted);
+}
+
+.wrap {
+  max-width: 1160px; margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+
+/* Header */
+.top { border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px; padding-block: 18px; }
+.mark { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--ink); }
+.mark b { font-family: var(--display); font-stretch: 70%; font-weight: 800; font-size: 1.9rem; letter-spacing: -0.02em; line-height: 1; }
+.mark span { font-family: var(--mono); font-size: var(--step--1); color: var(--muted); }
+nav ul { display: flex; flex-wrap: wrap; gap: 6px 20px; list-style: none; margin: 0; padding: 0; }
+nav a { color: var(--ink); text-decoration: none; font-size: 0.95rem; }
+nav a:hover { color: var(--accent); text-decoration: underline; }
+
+/* Hero */
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; padding-block: 56px 64px; align-items: start; }
+.hero-text { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.lede { font-size: var(--step-1); line-height: 1.5; }
+.cmds { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.cmd {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--code-bg); border-radius: 4px; padding: 10px 10px 10px 14px; min-width: 0;
+}
+.cmd code { white-space: nowrap; overflow-x: auto; min-width: 0; }
+.cmd code::before { content: "$ "; color: var(--muted); }
+.cmd small { color: var(--muted); font-size: var(--step--1); margin-left: auto; white-space: nowrap; }
+.copy {
+  font: 500 var(--step--1) var(--mono); color: var(--accent); background: transparent;
+  border: 1px solid var(--rule); border-radius: 3px; padding: 3px 8px; cursor: pointer; flex: none;
+}
+.copy:hover { border-color: var(--accent); }
+
+/* The example report */
+.report {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px;
+  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -28px rgba(19, 28, 46, 0.45);
+  min-width: 0;
+}
+.report-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; padding: 18px 20px 14px; border-bottom: 2px solid var(--ink); }
+.report-head h2 { font-size: 1.35rem; }
+.example { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 0; border-bottom: 1px solid var(--rule); }
+.facts div { padding: 10px 20px; border-top: 1px solid var(--rule); min-width: 0; }
+.facts div:nth-child(-n+2) { border-top: 0; }
+.facts div:nth-child(odd) { border-right: 1px solid var(--rule); }
+.facts dt { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-weight: 500; overflow-wrap: anywhere; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+td.n, th.n { text-align: right; }
+.report table { font-size: 0.9rem; min-width: 460px; }
+.report tr:last-child td { border-bottom: 0; }
+.report tr.now td { background: var(--accent-soft); font-weight: 600; }
+.yes { color: var(--kill); font-weight: 600; }
+.banks { padding: 14px 20px 6px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--rule); }
+.bar { display: flex; height: 12px; border-radius: 2px; overflow: hidden; background: var(--code-bg); }
+.bar span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--step--1); color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+.verdict { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-items: center; padding: 16px 20px 18px; border-top: 1px solid var(--rule); }
+.stamp {
+  font-family: var(--display); font-stretch: 68%; font-weight: 800; font-size: 2rem; letter-spacing: 0.04em;
+  color: var(--kill); border: 3px solid var(--kill); border-radius: 4px; padding: 0 10px; line-height: 1.25;
+  transform: rotate(-3deg); grid-row: span 2;
+}
+.verdict p { font-size: 0.92rem; }
+.verdict .note { font-size: var(--step--1); color: var(--muted); }
+
+/* Hero outcomes: what dud quick tells you */
+.outcomes { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.outcome {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px 20px;
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  box-shadow: 0 18px 40px -30px rgba(19, 28, 46, 0.45);
+}
+.outcome-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 4px; }
+.outcome-title { font-family: var(--display); font-stretch: 80%; font-weight: 750; font-size: 1.4rem; line-height: 1.15; text-wrap: balance; }
+.outcome p:last-child { color: var(--muted); }
+.stamp.keep { color: var(--keep); border-color: var(--keep); }
+.outcomes .note { font-size: var(--step--1); color: var(--muted); }
+
+/* How it works */
+.how .wrap { padding-block: 32px 40px; }
+ol.how-steps {
+  list-style: none; margin: 0; padding: 0; counter-reset: h;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px;
+}
+ol.how-steps li { counter-increment: h; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+ol.how-steps li::before {
+  content: counter(h); font-family: var(--display); font-stretch: 70%; font-weight: 800; font-size: 1.6rem;
+  line-height: 1; color: var(--accent);
+}
+
+/* The card record */
+section.band > .wrap.record { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 40px; align-items: start; }
+
+/* Sections */
+section.band { border-top: 1px solid var(--rule); }
+section.band > .wrap { padding-block: 56px; display: flex; flex-direction: column; gap: 28px; }
+.section-head { display: flex; flex-direction: column; gap: 10px; }
+.cols-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.cols-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.panel .time { font-family: var(--mono); font-size: var(--step--1); color: var(--accent); }
+ul.plain { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+ul.plain li::marker { color: var(--muted); }
+
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-family: var(--mono); font-size: var(--step--1); border-radius: 3px; padding: 2px 8px; border: 1px solid var(--rule); background: var(--sheet); }
+.chip.ok { color: var(--keep); border-color: currentColor; }
+.chip.blocked { color: var(--kill); border-color: currentColor; }
+.chip.ns { color: var(--muted); }
+.chip.err { color: var(--unknown); border-color: currentColor; }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 6px; background: var(--sheet); }
+.rule { padding: 18px 20px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; margin: 0 -1px -1px 0; }
+.rule b { font-family: var(--display); font-stretch: 72%; font-size: 2.1rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.rule b small { font-size: 0.5em; font-weight: 700; color: var(--muted); margin-left: 3px; }
+
+ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+ol.steps li::before { content: counter(s); font-family: var(--display); font-stretch: 70%; font-weight: 800; font-size: 1.8rem; line-height: 1; color: var(--accent); }
+
+/* Card ID tool */
+.tool { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.tool label { font-weight: 600; }
+.tool input {
+  font: 0.95rem var(--mono); color: var(--ink); background: var(--paper); width: 100%;
+  border: 1px solid var(--rule); border-radius: 4px; padding: 10px 12px;
+}
+.out { font-family: var(--mono); font-size: 0.9rem; background: var(--code-bg); border-radius: 4px; padding: 10px 12px; overflow-wrap: anywhere; min-height: 2.6em; }
+.out.bad { color: var(--kill); font-family: var(--body); }
+
+.cmd-table td:first-child { white-space: nowrap; }
+.cmd-table code { color: var(--accent); }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 880px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 36px 48px; }
+  .cols-3 { grid-template-columns: minmax(0, 1fr); }
+  section.band > .wrap.record { grid-template-columns: minmax(0, 1fr); }
+  ol.how-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  ol.how-steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+}
+@media (max-width: 640px) {
+  .cols-2 { grid-template-columns: minmax(0, 1fr); }
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .facts div { border-right: 0 !important; }
+  .facts div:nth-child(2) { border-top: 1px solid var(--rule); }
+  .cmd small { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stamp { animation: stamp 0.5s cubic-bezier(.2, 1.4, .4, 1) 0.4s both; }
+  @keyframes stamp { from { transform: rotate(-3deg) scale(1.35); opacity: 0.4; } to { transform: rotate(-3deg) scale(1); opacity: 1; } }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="dud home"><b>dud</b><span>GPU history registry</span></a>
+    <nav aria-label="Sections">
+      <ul>
+        <li><a href="#record">Card record</a></li>
+        <li><a href="#tests">Tests</a></li>
+        <li><a href="#reads">What dud reads</a></li>
+        <li><a href="#registry">Registry</a></li>
+        <li><a href="#fraud">Fraud</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#install">Install</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-text">
+        <span class="label">For rented H100, H200 and A100 GPUs</span>
+        <h1>Skip the GPU test when someone already did it.</h1>
+        <p class="lede">A full GPU test takes 60 to 90 minutes. dud checks a rented GPU against a shared registry in approximately 1 minute.</p>
+        <p>If another renter tested the GPU recently and it passed, start your work. If the GPU has a KILL verdict, dud warns you before you lose time on it.</p>
+        <div class="cmds" aria-label="Command">
+          <div class="cmd"><code>dud quick</code><small>approximately 1 minute</small><button class="copy" type="button" data-copy="dud quick">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="outcomes" aria-label="Example results of dud quick">
+        <div class="outcome">
+          <div class="outcome-head">
+            <span class="stamp keep" aria-label="Verdict: KEEP">KEEP</span>
+            <span class="label">GPU 0 · H100 SXM5 80GB</span>
+          </div>
+          <p class="outcome-title">Tested 6 days ago. Start your work.</p>
+          <p>The registry has 4 readings from 3 accounts. The last full test passed. The error counts did not go up after it.</p>
+        </div>
+        <div class="outcome">
+          <div class="outcome-head">
+            <span class="stamp" aria-label="Verdict: KILL">KILL</span>
+            <span class="label">GPU 1 · H100 SXM5 80GB</span>
+          </div>
+          <p class="outcome-title">On record since 2 September. Ask for a different GPU.</p>
+          <p>An earlier full test found a pending row remap and 2 uncorrectable ECC errors. The counts are higher now.</p>
+        </div>
+        <p class="note">Example output of <code>dud quick</code>. Verdicts come in a later version of dud.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band how" aria-label="How it works">
+    <div class="wrap">
+      <ol class="how-steps">
+        <li><h3>Get access one time</h3><p>Run <code>dud full</code> on one GPU. An accepted full test gives 30 days of registry access.</p></li>
+        <li><h3>Check each new GPU</h3><p>On each GPU that you rent, run <code>dud quick</code>. It takes approximately 1 minute.</p></li>
+        <li><h3>Decide in 1 minute</h3><p>A recent KEEP: start your work. A KILL: ask the provider for a different GPU.</p></li>
+        <li><h3>No record yet?</h3><p>Run <code>dud full</code>. Your result helps the next renter of that GPU.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="record">
+    <div class="wrap record">
+      <div class="section-head">
+        <span class="label">The card record</span>
+        <h2>Every GPU gets a history, like a used car</h2>
+        <p>Each full test adds a reading to the record of that GPU. The record stays with the GPU when it moves to a different provider.</p>
+        <p>GPUs of the same model are not equal. Some have used many of their spare memory rows. The provider does not tell you this. The GPU does.</p>
+      </div>
+      <article class="report" aria-label="Example card history report">
+        <div class="report-head">
+          <h2>Card history report</h2>
+          <span class="example">Example data</span>
+        </div>
+        <dl class="facts">
+          <div><dt>Card ID</dt><dd class="mono">0e8d2a6cdfb6b9dd…</dd></div>
+          <div><dt>Model</dt><dd>H100 SXM5 80GB</dd></div>
+          <div><dt>Readings</dt><dd>3, from 3 accounts</dd></div>
+          <div><dt>First reading</dt><dd>14 May 2026</dd></div>
+        </dl>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Provider</th>
+                <th scope="col" class="n">Correctable ECC</th>
+                <th scope="col" class="n">Uncorrectable ECC</th>
+                <th scope="col" class="n">Row remaps</th>
+                <th scope="col">Pending row remap</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2026-05-14</td><td>Provider A</td><td class="n">3</td><td class="n">0</td><td class="n">0</td><td>No</td></tr>
+              <tr><td>2026-07-02</td><td>Provider B</td><td class="n">12</td><td class="n">0</td><td class="n">1</td><td>No</td></tr>
+              <tr class="now"><td>2026-10-31</td><td>This test</td><td class="n">41</td><td class="n">2</td><td class="n">4</td><td class="yes">Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="banks">
+          <span class="label">Bank availability now (2560 banks)</span>
+          <div class="bar" role="img" aria-label="2556 banks at maximum availability, 4 banks at high availability">
+            <span style="width: 99.84%; background: var(--keep)"></span>
+            <span style="width: 0.16%; min-width: 3px; background: var(--unknown)"></span>
+          </div>
+          <div class="legend">
+            <span><i style="background: var(--keep)"></i>Maximum 2556</span>
+            <span><i style="background: var(--unknown)"></i>High 4</span>
+            <span>Partial 0</span><span>Low 0</span><span>None 0</span>
+          </div>
+        </div>
+        <div class="verdict">
+          <span class="stamp" aria-label="Verdict: KILL">KILL</span>
+          <p>This GPU has a pending row remap and 2 uncorrectable ECC errors since the last reset.</p>
+          <p class="note">Example verdict. Verdicts come in a later version of dud.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="band" id="tests">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Two tests</span>
+        <h2>A short look, or the full examination</h2>
+      </div>
+      <div class="cols-2">
+        <div class="panel">
+          <span class="time">dud quick · approximately 1 minute</span>
+          <h3>Quick test</h3>
+          <ul class="plain">
+            <li>Reads the identity and the history of each GPU on the node.</li>
+            <li>Compares the GPU with its earlier registry readings, if you have registry access.</li>
+            <li>Sends only card IDs to the registry.</li>
+            <li>Writes a result file and a report on the node.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <span class="time">dud full · approximately 60 to 90 minutes</span>
+          <h3>Full test</h3>
+          <ul class="plain">
+            <li>Does everything that the quick test does.</li>
+            <li>Does the registry challenge, which proves that a real GPU did the work.</li>
+            <li>Adds the DCGM test, performance tests and a load test in a later version.</li>
+            <li>Sends the result to the registry. An accepted full test gives 30 days of registry access.</li>
+          </ul>
+        </div>
+      </div>
+      <p>dud tests each GPU on its own, and reports on the node as a whole. A node can have 1 to 8 GPUs.</p>
+    </div>
+  </section>
+
+  <section class="band" id="reads">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What dud reads</span>
+        <h2>The GPU keeps its own records</h2>
+        <p>Each GPU records its memory errors and memory repairs. These records stay with the card when it moves from one provider to the next.</p>
+      </div>
+      <div class="cols-3">
+        <div class="panel">
+          <h3>Identity</h3>
+          <ul class="plain">
+            <li>Model and form factor (SXM, PCIe or NVL)</li>
+            <li>Card ID and serial ID (hashes)</li>
+            <li>VBIOS, driver and CUDA versions</li>
+            <li>Total memory, default and current power limit</li>
+            <li>PCIe link generation and width, NVLink, GPU connections</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>History</h3>
+          <ul class="plain">
+            <li>Correctable and uncorrectable ECC errors, volatile and aggregate counts</li>
+            <li>Row remaps: correctable, uncorrectable, pending and failed</li>
+            <li>Bank availability: how many memory banks still have spare rows</li>
+            <li>Retired pages, on older GPUs</li>
+            <li>XID errors in the kernel log</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Visibility</h3>
+          <p>For each value, dud records a status:</p>
+          <div class="status-row">
+            <span class="chip ok">available</span>
+            <span class="chip blocked">blocked</span>
+            <span class="chip ns">not supported</span>
+            <span class="chip err">error</span>
+          </div>
+          <p>An H100 always records ECC errors. If nvidia-smi shows N/A, the provider, the VM or the container blocks the value. A blocked value is a finding about the provider.</p>
+        </div>
+      </div>
+      <p>dud keeps the raw output of each command, for example the full <code>nvidia-smi -q -x</code> XML. The registry uses it to check each value.</p>
+    </div>
+  </section>
+
+  <section class="band" id="registry">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The registry</span>
+        <h2>Anyone can test. Only testers can look up.</h2>
+        <p>Anyone can run dud. To read the registry, you need an accepted full test from the last 30 days. Without access, no registry data is available: not for one card and not as totals.</p>
+      </div>
+      <div class="rules">
+        <div class="rule"><b>30<small>days</small></b><span>of registry access after each accepted full test</span></div>
+        <div class="rule"><b>100<small>lookups</small></b><span>for each account each day</span></div>
+        <div class="rule"><b>1<small>card ID</small></b><span>in each lookup. There is no list of cards and no export.</span></div>
+        <div class="rule"><b>10<small>%</small></b><span>maximum weight of one contributor in the stats for a model</span></div>
+      </div>
+      <p>Stats for a model show percentiles only. They need 20 or more cards from 10 or more contributors. New contributors start with low trust. Their trust goes up when their readings agree with other readings of the same cards.</p>
+    </div>
+  </section>
+
+  <section class="band" id="fraud">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Fraud</span>
+        <h2>The registry trusts no client</h2>
+        <p>dud is open source, so anyone can change the client. All checks run in the registry. This is the sequence for each full test:</p>
+      </div>
+      <ol class="steps">
+        <li><div><h3>A single-use nonce</h3><p>The registry gives a nonce for each full test. The nonce expires after 3 hours.</p></div></li>
+        <li><div><h3>Work that nobody can do before</h3><p>Each GPU does matrix work on its tensor cores. The nonce and the card ID set the input values.</p></div></li>
+        <li><div><h3>A commit and a clock</h3><p>The client sends one Merkle root of all results. The registry clock measures the time. Too fast or too slow for the model: rejected.</p></div></li>
+        <li><div><h3>Spot checks</h3><p>The registry picks results at random and checks each one exactly.</p></div></li>
+        <li><div><h3>The raw output, read again</h3><p>The registry reads the raw nvidia-smi output with its own parser. Each value must agree. Memory and power must agree with the datasheet. Aggregate counts must not go down.</p></div></li>
+      </ol>
+      <p>Nobody can make fraud impossible. The goal is that fraud costs more than an honest test, and that an admin can find it. <a href="https://github.com/Shorya-Jain/dud/blob/main/THREATS.md">THREATS.md</a> lists each threat, its defense and the remaining gap.</p>
+    </div>
+  </section>
+
+  <section class="band" id="privacy">
+    <div class="wrap">
+      <div class="cols-2">
+        <div class="section-head">
+          <span class="label">Privacy</span>
+          <h2>What leaves your node</h2>
+          <ul class="plain">
+            <li>The GPU UUID and serial number never leave the node. dud replaces them with SHA-256 hashes before it writes or sends a file.</li>
+            <li>dud removes process names and process IDs from the raw output.</li>
+            <li>From the kernel log, dud keeps only XID error lines.</li>
+            <li>The quick test sends only card IDs. The full test sends the result file.</li>
+            <li>The registry stores each card ID as a keyed hash, not as the card ID.</li>
+          </ul>
+        </div>
+        <form class="tool" id="card-tool" autocomplete="off">
+          <span class="label">Card ID</span>
+          <label for="uuid">Find the card ID of a GPU</label>
+          <p>On the node, run <code>nvidia-smi --query-gpu=uuid --format=csv,noheader</code>. Paste one UUID here. Your browser calculates the card ID. The UUID does not leave this page.</p>
+          <input id="uuid" name="uuid" type="text" spellcheck="false" value="GPU-5e1a7c3d-90b2-4f61-8c3e-a1b2c3d4e500" aria-describedby="card-id">
+          <div class="out" id="card-id" aria-live="polite">0e8d2a6cdfb6b9dd85e4e9009e7cce44cadfbd631a1ed947431f0318ec62ba99</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Install</span>
+        <h2>Run dud on a rented node</h2>
+        <p>dud needs Python 3.9 or later and the NVIDIA driver. The full test also needs PyTorch with CUDA. If PyTorch is not installed, dud asks before it installs it.</p>
+        <p>The package name is <code>dud-gpu</code>. The command is <code>dud</code>. dud is not on PyPI yet. Until then, build it from the source code.</p>
+      </div>
+      <div class="cmd"><code>pip install dud-gpu</code><button class="copy" type="button" data-copy="pip install dud-gpu">Copy</button></div>
+      <div class="scroll">
+        <table class="cmd-table">
+          <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>dud login</code></td><td>Signs you in with GitHub. Rented nodes have no browser, so you approve the sign-in on any computer or phone.</td></tr>
+            <tr><td><code>dud quick</code></td><td>Does the quick test.</td></tr>
+            <tr><td><code>dud full</code></td><td>Does the full test and sends the result to the registry.</td></tr>
+            <tr><td><code>dud status</code></td><td>Shows your account, your access and your lookups today.</td></tr>
+            <tr><td><code>dud report &lt;file&gt;</code></td><td>Shows the report for a saved result file.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Options: <code>--provider &lt;name&gt;</code>, <code>--gpus 0,1</code>, <code>--no-submit</code>, <code>--skip-dcgm</code>, <code>--load-minutes N</code>.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>dud 0.1.0. The registry is in test.</span>
+    <span><a href="https://github.com/Shorya-Jain/dud">Source code on GitHub</a> · Apache-2.0</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Copy buttons.
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.getAttribute("data-copy");
+      var done = function () { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { selectCode(btn); });
+      } else {
+        selectCode(btn);
+      }
+    });
+  });
+  function selectCode(btn) {
+    var code = btn.parentNode.querySelector("code");
+    var range = document.createRange();
+    range.selectNodeContents(code);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  // Card ID: SHA-256 of "dud-card-v1:uuid:" + the UUID in lower case. Same as src/dud/ids.py.
+  var input = document.getElementById("uuid");
+  var out = document.getElementById("card-id");
+  var form = document.getElementById("card-tool");
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+  function update() {
+    var uuid = input.value.trim().toLowerCase();
+    if (!uuid) { out.textContent = ""; out.classList.remove("bad"); return; }
+    if (!/^gpu-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(uuid)) {
+      out.textContent = "This is not a GPU UUID. A GPU UUID starts with GPU- and has 32 hexadecimal digits.";
+      out.classList.add("bad");
+      return;
+    }
+    if (!(window.crypto && crypto.subtle)) { out.textContent = "This browser cannot calculate SHA-256."; out.classList.add("bad"); return; }
+    crypto.subtle.digest("SHA-256", new TextEncoder().encode("dud-card-v1:uuid:" + uuid)).then(function (buf) {
+      out.classList.remove("bad");
+      out.textContent = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    });
+  }
+  input.addEventListener("input", update);
+  update();
+})();
+</script>
+</body>
+</html>
