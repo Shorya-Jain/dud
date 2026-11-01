@@ -26,9 +26,10 @@ The website is one page in `site/index.html`. It has no build step.
 It explains the value of dud: skip the GPU test when someone already did it.
 It shows the KEEP and KILL outcomes, the steps, an example card record, and a tool that calculates a card ID in the browser.
 
+- Address: https://dud.shoryajain99.workers.dev
 - To see it on your computer, open `site/index.html` in a browser.
-- To put it on Cloudflare Pages, do `docs/DEPLOY.md`, step 11.
-- The website is not online yet. Make the repository public before you put it online, because the links on the page go to GitHub.
+- To update the website, do `docs/DEPLOY.md`, step 11.
+- The links on the page go to the GitHub repository. Until the repository is public, they show "404" to other people.
 
 ## Commands
 
