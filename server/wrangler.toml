@@ -20,7 +20,7 @@ migrations_dir = "migrations"
 # bucket_name = "dud-raw"
 
 [vars]
-GITHUB_CLIENT_ID = "REPLACE_WITH_YOUR_GITHUB_CLIENT_ID"  # docs/DEPLOY.md, step 2
+GITHUB_CLIENT_ID = "Ov23liGL9lj8R4ssQMJ3"  # docs/DEPLOY.md, step 2. Not a secret.
 # Settings. Defaults are in src/env.ts. Values here override them.
 ACCESS_DAYS = "30"
 DAILY_LOOKUP_QUOTA = "100"
