@@ -208,6 +208,8 @@ class MockProbe:
         self.spec = json.loads((self.folder / "fixture.json").read_text())
         nvml_file = self.spec.get("nvml_file")
         self.nvml_data = json.loads((self.folder / nvml_file).read_text()) if nvml_file else {"init_error": "missing"}
+        bench_file = self.spec.get("bench_file")
+        self.bench_data = json.loads((self.folder / bench_file).read_text()) if bench_file else {}
 
     def _content(self, item: dict, key_text: str, key_file: str) -> str:
         if key_file in item:

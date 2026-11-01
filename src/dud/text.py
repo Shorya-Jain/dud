@@ -11,7 +11,24 @@ Write in ASD-STE100 Simplified Technical English:
 MOCK_BANNER = "MOCK MODE: dud uses fixture data. These results are not from a real GPU."
 QUICK_START = "dud {version}: quick test started."
 FULL_START = "dud {version}: full test started."
-FULL_NOT_YET = "This version does not do the DCGM test, the performance tests or the load test. A later version adds them."
+DCGM_START = "DCGM: dud runs the level 3 diagnostic. This can take up to 30 minutes."
+DCGM_DONE = "DCGM: the diagnostic is complete."
+PERF_GPU = "Performance: dud tests GPU {index}."
+PERF_P2P = "Performance: dud tests the bandwidth between each pair of GPUs."
+LOAD_START = "Load test: dud runs a sustained load for {minutes} minutes. Number of GPUs: {count}."
+VERDICT_LINE = "Verdict: {verdict}. {summary}"
+GPU_VERDICT_LINE = "GPU {index}: {verdict}. {summary}"
+VERDICT_ALL_PASSED = "All checks passed."
+NODE_KEEP = "All GPUs passed the checks."
+NODE_KILL = "Do not use GPU {gpus}. See the report for the reasons."
+NODE_UNKNOWN = "dud cannot give a verdict for GPU {gpus}, because it cannot read key values."
+REGISTRY_KILL = "The registry has a KILL verdict for this GPU from {date}. Ask the provider for a different GPU."
+REGISTRY_RECENT_KEEP = "A full test {when} gave KEEP. The error counts did not go up after it. Start your work."
+REGISTRY_KEEP_COUNTS_UP = "A full test {when} gave KEEP, but error counts went up after it. Run dud full to examine the GPU again."
+REGISTRY_KEEP_BUT_UNKNOWN = "A full test {when} gave KEEP."
+WHEN_TODAY = "today"
+WHEN_ONE_DAY = "1 day ago"
+WHEN_DAYS = "{days} days ago"
 STOPPED = "dud stopped."
 BAD_LOAD_MINUTES = "The --load-minutes value must be 1 or more."
 RESULT_WRITTEN = "Result file: {path}"
@@ -51,8 +68,20 @@ TORCH_MISSING = "The full test needs PyTorch with CUDA. The install command is: 
 TORCH_ASK = "Install PyTorch now? It is a download of approximately 2.5 GB. [y/N] "
 TORCH_NOT_INSTALLED = "dud stopped, because PyTorch is not installed. Install PyTorch, then run dud full again."
 TORCH_NO_CUDA = "PyTorch cannot find a CUDA GPU. The full test needs a CUDA GPU."
+DCGM_MISSING = "DCGM is not installed on this node. dud can install it."
+DCGM_ASK = "Install DCGM ({package}) now? It is a download of up to 1 GB. [Y/n] "
+DCGM_INSTALL_START = "dud installs {package} with apt. This can take some minutes."
+DCGM_INSTALL_DONE = "DCGM is installed."
+DCGM_INSTALL_FAILED = "dud cannot install DCGM. Details: {detail}"
+DCGM_INSTALL_SEE_OUTPUT = "see the apt output above."
+DCGM_INSTALL_NO_APT = "dud can install DCGM only on Linux nodes that have apt."
+DCGM_INSTALL_OS = "dud can install DCGM only on Ubuntu and Debian. This node has {os}."
+DCGM_INSTALL_ARCH = "dud cannot install DCGM for this CPU type: {arch}."
+DCGM_INSTALL_NO_CUDA = "dud cannot read the CUDA version of the driver. It needs this version to select the DCGM package."
+DCGM_INSTALL_NOT_ROOT = "To install DCGM, run dud as root or install sudo."
+DCGM_INSTALL_NO_TERMINAL = "dud cannot ask about the DCGM install, because there is no terminal. Use --install-dcgm."
 SELF_TEST_FAILED = "GPU {index} gave a wrong result in the challenge self-test. dud stopped. Do not use this GPU."
-CHALLENGE_START = "Challenge: dud does registry work on {count} GPUs. Do not stop dud."
+CHALLENGE_START = "Challenge: dud does registry work on the GPUs. Number of GPUs: {count}. Do not stop dud."
 CHALLENGE_DONE = "Challenge: the registry accepted the work. The registry measured {seconds} s."
 SUBMIT_START = "dud sends the result to the registry."
 SUBMIT_ACCEPTED_ACCESS = "The registry accepted your result. You have registry access until {date}."
@@ -65,7 +94,7 @@ SUBMIT_FAILED = "dud could not send the result. Your result file is on this node
 # Registry history in the quick test
 REGISTRY_NOT_LOGGED_IN = "dud did not compare with the registry. Run dud login to compare with earlier readings."
 REGISTRY_CARD_NONE = "GPU {index}: the registry has no earlier readings of this GPU."
-REGISTRY_CARD_HISTORY = "GPU {index}: the registry has {count} earlier readings from {contributors} accounts. The first is from {first}."
+REGISTRY_CARD_HISTORY = "GPU {index}: earlier readings in the registry: {count}. Accounts: {contributors}. First reading: {first}."
 REGISTRY_LOW_TRUST = "Readings with low trust come from new contributors."
 
 HELP = {
@@ -84,10 +113,11 @@ HELP = {
     "out_dir": "Write results into this folder. Default: ./dud-results.",
     "no_submit": "Do not send the result to the registry.",
     "skip_dcgm": "Do not run the DCGM test.",
+    "install_dcgm": "If DCGM is not installed, install it. Do not ask.",
     "load_minutes": "Run the load test for this number of minutes. Default: 15.",
 }
 
-SUMMARY_HEADERS = ("GPU", "Model", "Card ID", "Uncorrectable ECC (volatile)", "Pending row remap", "Blocked values")
+SUMMARY_HEADERS = ("Verdict", "GPU", "Model", "Card ID", "Uncorrectable ECC (volatile)", "Pending row remap", "Blocked values")
 
 # --- Report ------------------------------------------------------------------
 
@@ -103,6 +133,20 @@ SECTION_XID = "XID errors"
 SECTION_NOT_READ = "Values that dud could not read"
 SECTION_FINDINGS = "Findings"
 SECTION_VISIBILITY = "Visibility summary"
+SECTION_PERF = "Performance"
+SECTION_DIAG = "DCGM diagnostic and errors during the test"
+SECTION_P2P = "GPU-to-GPU bandwidth"
+SECTION_CHECKS = "Grading checks"
+COL_RULE = "Check"
+COL_RESULT = "Result"
+COL_SPEC = "Datasheet"
+COL_FRACTION = "Fraction of datasheet"
+COL_TEST = "Test"
+COL_INFO = "Details"
+RESULTS = {"pass": "Pass", "fail": "Fail", "missing": "No value", "skipped": "Skipped", "warn": "Warning",
+           "skip": "Skipped", "unknown": "Unknown"}
+NO_DCGM_TESTS = "The DCGM diagnostic did not run for this GPU."
+P2P_NOTE = "Each cell is the copy bandwidth in GB/s from the row GPU to the column GPU."
 SECTION_REGISTRY = "Registry history"
 COL_DATE = "Date"
 COL_PROVIDER = "Provider"
@@ -181,6 +225,14 @@ REASONS = {
     "nvml_error": "NVML shows an error for this value.",
     "gpu_not_in_nvml": "NVML does not show this GPU.",
     "from_nvml": "nvidia-smi does not show this value. dud read it from NVML.",
+    "dcgm_not_installed": "DCGM is not installed on this node. Install DCGM to run the diagnostic.",
+    "dcgm_skipped_by_user": "You used --skip-dcgm.",
+    "bench_not_supported": "This GPU or this PyTorch version cannot do this test.",
+    "bench_failed": "The test stopped with an error.",
+    "single_gpu": "This node has one GPU, so there is no GPU-to-GPU bandwidth.",
+    "load_not_run": "dud did not run the load test.",
+    "torch_missing": "PyTorch with CUDA is not installed, so dud did not run the performance tests.",
+    "no_before_after": "dud could not read the value before and after the test.",
 }
 REASON_UNKNOWN = "dud has no explanation for this status."
 
@@ -250,6 +302,19 @@ LABELS = {
     "snapshot.reset_required": "GPU reset required",
     "snapshot.pcie_replay_count": "PCIe replay count",
     "snapshot.throttle_reasons_active": "Active throttle reasons",
+    "perf.bf16_tflops": "BF16 matrix multiply",
+    "perf.fp8_tflops": "FP8 matrix multiply",
+    "perf.hbm_gbps": "Memory bandwidth",
+    "perf.sustained_bf16_tflops": "Sustained BF16 (load test median)",
+    "perf.throttle_hw_fraction": "Time with thermal or hardware slowdown",
+    "perf.power_capped_fraction": "Time at the power limit",
+    "perf.max_temp_c": "Maximum temperature in the load test",
+    "diag.dcgm_result": "DCGM diagnostic result",
+    "diag.dcgm": "DCGM diagnostic tests",
+    "diag.ecc_uncorrectable_delta": "New uncorrectable ECC errors during the test",
+    "diag.ecc_correctable_delta": "New correctable ECC errors during the test",
+    "diag.row_remap_pending_after": "Pending row remap after the test",
+    "p2p_bandwidth": "GPU-to-GPU bandwidth",
     "driver_version": "Driver version",
     "cuda_driver_version": "CUDA version (driver)",
     "nvml_version": "NVML version",

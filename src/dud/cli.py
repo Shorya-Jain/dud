@@ -5,7 +5,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, history, model, report
+from . import __version__, grade, history, model, report
 from . import text as T
 from .collect import UnknownGpu, collect
 from .model import DudError
@@ -40,12 +40,17 @@ def cmd_quick(args) -> int:
     if not args.offline and doc["gpus"]:
         doc["registry"] = history.fetch(doc)
         history.compare(doc)
+    if doc["gpus"]:
+        grade.grade_doc(doc)
     folder = model.save_result(doc, Path(args.out_dir), report.render(doc))
     print()
     if doc["gpus"]:
         print(report.terminal_summary(doc))
+        print()
         for line in report.registry_lines(doc):
             print(line)
+        for gpu in doc["gpus"]:
+            print(T.GPU_VERDICT_LINE.format(index=gpu["index"], verdict=gpu["verdict"]["verdict"], summary=gpu["verdict"]["summary"]))
     else:
         print(T.NO_GPUS)
     print()
@@ -128,6 +133,7 @@ def build_parser() -> argparse.ArgumentParser:
     common(full)
     full.add_argument("--no-submit", action="store_true", help=T.HELP["no_submit"])
     full.add_argument("--skip-dcgm", action="store_true", help=T.HELP["skip_dcgm"])
+    full.add_argument("--install-dcgm", action="store_true", help=T.HELP["install_dcgm"])
     full.add_argument("--load-minutes", type=int, default=15, help=T.HELP["load_minutes"])
     full.set_defaults(func=cmd_full)
 

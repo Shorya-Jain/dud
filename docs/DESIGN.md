@@ -21,7 +21,12 @@ Read it before you change the schema, the challenge or a registry check.
   - `reason` is a code (for example `hidden_on_supported_model`). `src/dud/text.py` has the text for each code.
   - The visibility map in the report comes from these Fields. It cannot disagree with the values.
 - **Raw output**: each entry has the text after redaction (gzip, base64), its SHA-256 and its size. The SHA-256 is of the UTF-8 text before compression.
-- **Sections that later milestones fill**: `diag`, `perf`, `load`, `verdict` and `node.p2p_bandwidth` (milestone 2), `attestation` (future). They are null now. Filling them needs no schema version change.
+- **Full-test sections** (null in a quick test):
+  - `gpu.diag`: the DCGM result and tests, and the change in ECC counts and the pending row remap state between the start and the end of the test.
+  - `gpu.perf`: BF16, FP8 and memory bandwidth, and the values from the load test (sustained BF16, time with slowdown, time at the power limit, maximum temperature). Each one is a Field.
+  - `node.p2p_bandwidth`: copy bandwidth for each pair of GPUs.
+- **`gpu.verdict`**: the verdict, the result of each grading rule with its text, and (quick test) the newest registry verdict. `node.verdict` combines the GPUs.
+- **`attestation`**: reserved for the future. It is null now.
 - **`challenge`**: the challenge transcript of a full test (ID, nonce, Merkle roots, samples, times).
 - **`registry`**: optional, quick test only. Earlier registry readings of the cards. The registry ignores it.
 - **`gpu.load`** (milestone 2 fills it, the registry checks it now):
@@ -80,6 +85,34 @@ The Merkle commit over all digests, and exact integer products, close both probl
 
 To calibrate: run real full tests on each model and record `server_elapsed_ms`. Then set `min_efficiency` (and `assumed_efficiency`) in `specs.yaml` so that honest runs pass with a margin and slower GPUs fail.
 
+## Full test (milestone 2)
+
+Code: `src/dud/fulltest.py`, `src/dud/collect/dcgm.py`, `src/dud/bench/`.
+
+1. Collect identity and history.
+2. DCGM: `dcgmi diag -r 3 -j`. dud starts `nv-hostengine` if `dcgmi` cannot connect. DCGM runs before dud starts CUDA, because DCGM can refuse to test a GPU that another process uses. If `dcgmi` is not installed, dud asks to install DCGM 4 with apt from the NVIDIA CUDA package source (`src/dud/dcgm_install.py`). This works on Ubuntu and Debian, as root or with sudo. `--install-dcgm` installs without a question. If dud cannot install DCGM, it records the reason and continues.
+3. The registry challenge (section "Challenge"). It is after DCGM and is still inside the 3-hour nonce window.
+4. Performance tests with PyTorch, one GPU at a time: BF16 (8192 × 8192), FP8 (`torch._scaled_mm`, compute capability 8.9 and later), memory bandwidth (a 2 GiB device copy), and copy bandwidth for each pair of GPUs.
+5. Load test: BF16 matrix multiplies on all GPUs together for `--load-minutes` (default 15). Each second, dud records the SM and memory clocks, temperature, power, utilization, NVML throttle reasons and the BF16 speed in that second.
+6. dud reads `nvidia-smi -q -x` again (`smi_q_x_after`) and records the change in ECC counts.
+7. Grading.
+
+dud sets `CUDA_DEVICE_ORDER=PCI_BUS_ID` and removes `CUDA_VISIBLE_DEVICES`, so that CUDA, NVML and nvidia-smi use the same GPU numbers. Use `--gpus` to select GPUs.
+
+Mock mode takes the performance values and the load parameters from `fixtures/<name>/bench.json`. It makes a load series at once, with a fixed random seed.
+
+## Grading
+
+- The rules are in `grading.yaml`. Code applies them and knows only four checks: `max`, `is`, `not_in` and `min_spec_fraction`.
+- KILL beats UNKNOWN, and UNKNOWN beats KEEP. A rule with `if_missing: skip` (DCGM, bank availability) does not make UNKNOWN when its value is missing.
+- Throttling counts only thermal and hardware slowdown (NVML bits 0x8, 0x20, 0x40 and 0x80). The power cap (0x4) is normal under full load, so it does not count.
+- The limits are first estimates. Calibrate them with real runs: sustained BF16 55 % of the datasheet, memory bandwidth 70 %, slowdown 10 % of the load time.
+- Quick test: history rules only, then the registry. In sequence:
+  1. A local KILL wins.
+  2. Any KILL in the registry for the card gives KILL.
+  3. A KEEP from a full test in the last `registry_recent_days` (30) days says "start your work", but only if no aggregate count went up after that test.
+- The registry calculates its own verdict with a copy of the engine (`server/src/grade.ts`) and stores it with the reasons. `server/test/units.test.ts` checks that both engines give the same results on every fixture.
+
 ## Registry
 
 ### Storage
@@ -100,13 +133,14 @@ To calibrate: run real full tests on each model and record `server_elapsed_ms`. 
 | `challenge`: own, verified, not used, not expired, same nonce | reject |
 | `card_ids`: the same GPUs and models as the challenge | reject |
 | `raw_hashes`: each raw output decodes and matches its SHA-256 and size | reject |
-| `replay`: no raw output that an earlier submission had | reject |
+| `replay`: no nvidia-smi XML or performance log that an earlier submission had | reject |
 | `parsed_values`: values match the server's own reading of the XML | reject |
 | `specs`: model key, memory and default power limit match `specs.yaml` | reject |
 | `timing`: start, finish, duration, challenge time and nvidia-smi time agree | reject (flag if the time cannot be checked) |
 | `load`: a load series exists (if `REQUIRE_LOAD`) and is physically possible | reject |
 | `counters`: no aggregate counter lower than an earlier reading of the card | flag |
 | `account`: active account, GitHub account at least 30 days old | flag |
+| `verdict`: the registry calculates the verdict with grading.yaml and logs it next to the client's verdict | never fails |
 | `access`: all GPUs tested, and no card gave access to another account in 30 days | no access (the data is still accepted) |
 
 Any reject: the submission is `rejected`. Else any flag: `flagged` (stored, no access, admin review). Else `accepted`.
@@ -133,6 +167,13 @@ Any reject: the submission is `rejected`. Else any flag: `flagged` (stored, no a
 - `dud quick` does not send readings to the registry in v1.
 - Package name on PyPI: `dud-gpu` (`dud` is taken). The command is `dud`.
 
+31 Oct 2026, milestone 2 (after milestone 3):
+
+- Value proposition: `dud quick` tells a renter to start work when a recent full test gave KEEP, and warns about a KILL in the registry.
+- DCGM runs before the challenge and the performance tests. dud asks before it installs DCGM.
+- The registry calculates its own verdict. `REQUIRE_LOAD` is on.
+- DCGM output is not a replay signal: two honest runs on one node can give the same text.
+
 31 Oct 2026, milestone 3:
 
 - The registry came before milestone 2. `REQUIRE_LOAD` is off until the CLI has the load test. Turn it on before launch.
@@ -151,3 +192,5 @@ These come from the known format, not from a real GPU. Check them when real fixt
 - NVML memory total versus nvidia-smi `fb_memory_usage/total`.
 - All values with `verify: true` in `specs.yaml`.
 - The challenge time limits (`min_efficiency`).
+- The grading limits in `grading.yaml`, mainly sustained BF16 and memory bandwidth.
+- The DCGM JSON format on real nodes (the parser accepts several formats).

@@ -28,6 +28,7 @@
     }
   },
   "nvml_file": "nvml.json",
+  "bench_file": "bench.json",
   "files": {
     "/etc/os-release": {
       "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"

@@ -1,0 +1,25 @@
+{
+  "gpus": {
+    "0": {
+      "bf16_tflops": 731.5,
+      "fp8_tflops": 1372.4,
+      "hbm_gbps": 2871.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 36,
+        "temp_end": 70,
+        "power": 684,
+        "power_jitter": 10,
+        "tflops": 705.3,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.5,
+            "after_s": 60
+          }
+        ]
+      }
+    }
+  }
+}

@@ -310,8 +310,42 @@ def cmd(stdout_file=None, stdout=None, exit_code=0, stderr=""):
     return out
 
 
+def dcgm_json(n: int, fail: dict | None = None) -> str:
+    """dcgmi diag -r 3 -j output (DCGM 3 format). fail: {gpu_index: (test name, warning)}."""
+    fail = fail or {}
+    cats = [("Deployment", ["Denylist", "NVML Library", "CUDA Main Library", "Permissions and OS Blocks",
+                            "Persistence Mode", "Environmental Variables", "Page Retirement/Row Remap",
+                            "Graphics Processes", "Inforom"]),
+            ("Integration", ["PCIe"]),
+            ("Hardware", ["GPU Memory", "Diagnostic"]),
+            ("Stress", ["Targeted Stress", "Targeted Power", "Memory Bandwidth"])]
+    out = {"DCGM GPU Diagnostic": {"test_categories": []}, "version": "3.3.7"}
+    for cat, names in cats:
+        tests = []
+        for name in names:
+            if cat == "Deployment" and name != "Page Retirement/Row Remap":
+                results = [{"status": "Pass"}]
+            else:
+                results = []
+                for i in range(n):
+                    r = {"gpu_ids": str(i), "status": "Pass"}
+                    if fail.get(i, (None,))[0] == name:
+                        r = {"gpu_ids": str(i), "status": "Fail", "warnings": [{"warning": fail[i][1], "error_id": 83}]}
+                    results.append(r)
+            tests.append({"name": name, "results": results})
+        out["DCGM GPU Diagnostic"]["test_categories"].append({"category": cat, "tests": tests})
+    return json.dumps(out, indent=2) + "\n"
+
+
+def bench_gpu(bf16, fp8, hbm, load, fp8_note=None) -> dict:
+    g = {"bf16_tflops": bf16, "fp8_tflops": fp8, "hbm_gbps": hbm, "load": load}
+    if fp8 is None:
+        g["fp8_tflops_note"] = fp8_note or "compute capability 8.0 has no FP8 tensor cores"
+    return g
+
+
 def write_fixture(name: str, description: str, xml: str, topo: str, nvml: dict, spec: dict,
-                  dmesg: str | None = None) -> None:
+                  dmesg: str | None = None, bench: dict | None = None, dcgm: str | None = None) -> None:
     d = HERE / name
     d.mkdir(exist_ok=True)
     (d / "nvidia-smi-q-x.xml").write_text(xml)
@@ -324,8 +358,15 @@ def write_fixture(name: str, description: str, xml: str, topo: str, nvml: dict, 
     if dmesg is not None:
         (d / "dmesg.txt").write_text(dmesg)
         commands["dmesg"] = cmd("dmesg.txt")
+    if dcgm is not None:
+        (d / "dcgm-diag.json").write_text(dcgm)
+        # dcgmi exits with 226 when a test fails, 0 when all pass.
+        commands["dcgmi diag -r 3 -j"] = cmd("dcgm-diag.json", exit_code=226 if '"Fail"' in dcgm else 0)
     commands.update(spec.pop("commands", {}))
     full = {"description": description, "synthetic": True, "commands": commands, "nvml_file": "nvml.json"}
+    if bench is not None:
+        (d / "bench.json").write_text(json.dumps(bench, indent=2) + "\n")
+        full["bench_file"] = "bench.json"
     full.update(spec)
     (d / "fixture.json").write_text(json.dumps(full, indent=2) + "\n")
 
@@ -370,6 +411,14 @@ def main() -> None:
             "euid": 0,
             "utc_offset_s": 0,
         },
+        bench={
+            "gpus": {str(i): bench_gpu(742.0 + i * 3.1, 1388.0 + i * 5.2, 2905.0 + i * 11, {
+                "sm_clock": 1980, "mem_clock": 2619, "temp_start": 33 + i, "temp_end": 68 + i % 3, "power": 688,
+                "power_jitter": 9, "tflops": 712.0 + i * 2.5, "throttle": [{"mask": 4, "fraction": 0.55, "after_s": 60}]})
+                     for i in range(8)},
+            "p2p": {"gbps": 372.0, "peer_access": True},
+        },
+        dcgm=dcgm_json(8),
         dmesg=(
             "[    0.000000] Linux version 5.15.0-105-generic (buildd@lcy02-amd64-007)\n"
             "[    1.204512] systemd[1]: Set hostname to <secret-host-01>.\n"
@@ -399,6 +448,11 @@ def main() -> None:
             "euid": 0,
             "utc_offset_s": 0,
         },
+        bench={"gpus": {"0": bench_gpu(731.5, 1372.4, 2871.0, {
+            "sm_clock": 1980, "mem_clock": 2619, "temp_start": 36, "temp_end": 70, "power": 684, "power_jitter": 10,
+            "tflops": 705.3, "throttle": [{"mask": 4, "fraction": 0.5, "after_s": 60}]})}},
+        dcgm=dcgm_json(1, {0: ("Page Retirement/Row Remap",
+                               "GPU 0 has uncorrectable memory errors and row remappings are pending. Reset the GPU.")}),
         dmesg=(
             "[    5.017334] NVRM: loading NVIDIA UNIX x86_64 Kernel Module  550.90.07\n"
             "[ 8123.442190] NVRM: Xid (PCI:0000:18:00): 94, pid=51234, name=python3, Contained: CE User Channel (0x9). RST: No, D-RST: No\n"
@@ -437,6 +491,10 @@ def main() -> None:
             "euid": 0,
             "utc_offset_s": 0,
         },
+        bench={"gpus": {"0": bench_gpu(248.6, None, 1712.0, {
+            "sm_clock": 1410, "mem_clock": 1512, "temp_start": 40, "temp_end": 88, "power": 238, "power_jitter": 8,
+            "tflops": 162.0, "slow_clock_drop": 420,
+            "throttle": [{"mask": 0x40, "fraction": 0.4, "after_s": 240}, {"mask": 4, "fraction": 0.2}]})}},
     )
 
     # 4. Two H100 PCIe in a Kubernetes pod in a VM. The provider hides ECC and row remap data.
@@ -475,6 +533,10 @@ def main() -> None:
             "euid": 1000,
             "utc_offset_s": -25200,
         },
+        bench={"gpus": {str(i): bench_gpu(588.0 + i * 4, 1151.0 + i * 6, 1838.0 + i * 9, {
+            "sm_clock": 1755, "mem_clock": 1593, "temp_start": 31, "temp_end": 66, "power": 342, "power_jitter": 6,
+            "tflops": 561.0 + i * 3, "throttle": [{"mask": 4, "fraction": 0.7, "after_s": 30}]}) for i in range(2)},
+            "p2p": {"gbps": 24.6, "peer_access": False}},
     )
 
 

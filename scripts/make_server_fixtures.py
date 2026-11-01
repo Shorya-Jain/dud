@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from dud import challenge as ch, model  # noqa: E402
 from dud.collect import collect  # noqa: E402
+from dud.fulltest import run_tests  # noqa: E402
 from dud.probe import MockProbe  # noqa: E402
 
 FIX = ROOT / "fixtures"
@@ -62,8 +63,9 @@ def iso(t: datetime) -> str:
 
 def full_doc(name: str) -> dict:
     """A full-test result, as a real node would make it. Times match the nvidia-smi time."""
-    doc = collect(MockProbe(FIX / name), mode="full",
-                  options={"gpus": None, "load_minutes": 15, "skip_dcgm": False, "submit": True})
+    probe = MockProbe(FIX / name)
+    doc = collect(probe, mode="full", options={"gpus": None, "load_minutes": 15, "skip_dcgm": False, "submit": True})
+    run_tests(probe, doc, load_minutes=15, skip_dcgm=False, gpus=None, say=lambda *a: None)
     doc["run"]["mock"] = False
     doc["run"]["fixture"] = None
     doc["run"]["provider"]["reported"] = "testcloud"
@@ -100,8 +102,12 @@ def main() -> None:
 
     base = docs["h100_sxm_pending_remap"]
 
+    # Each tampered result except the replay comes from a new run, so that only its own edit can fail.
+    def fresh():
+        return full_doc("h100_sxm_pending_remap")
+
     # 1. Parsed counter edited, raw XML not edited.
-    d = copy.deepcopy(base)
+    d = fresh()
     d["gpus"][0]["history"]["ecc"]["aggregate"]["uncorrectable"]["value"] = 0
     write(TAMPERED / "edited_counters" / "result.json", d)
     write(TAMPERED / "edited_counters" / "expect.json", {
@@ -110,7 +116,7 @@ def main() -> None:
 
     # 2. Counters edited in the raw XML and in the parsed values, so that they agree.
     #    Only the history of the card can find it.
-    d = copy.deepcopy(base)
+    d = fresh()
     replace_raw(d, "smi_q_x", "<dram_correctable>41</dram_correctable>", "<dram_correctable>10</dram_correctable>")
     d["gpus"][0]["history"]["ecc"]["aggregate"]["correctable"]["value"] = 10
     d["gpus"][0]["history"]["ecc"]["aggregate"]["detail"]["value"]["dram_correctable"] = 10
@@ -128,7 +134,7 @@ def main() -> None:
         "setup": ["h100_sxm_pending_remap"], "status": "rejected", "check": "replay"})
 
     # 4. Wrong memory size for the model, edited consistently in the XML and in the parsed values.
-    d = copy.deepcopy(base)
+    d = fresh()
     replace_raw(d, "smi_q_x", "<total>81559 MiB</total>", "<total>40960 MiB</total>")
     d["gpus"][0]["identity"]["memory_total_mib"]["value"] = 40960
     write(TAMPERED / "wrong_memory" / "result.json", d)
@@ -137,7 +143,7 @@ def main() -> None:
         "status": "rejected", "check": "specs"})
 
     # 5. Impossible benchmark time: the commit arrives faster than the datasheet allows.
-    write(TAMPERED / "impossible_timing" / "result.json", copy.deepcopy(base))
+    write(TAMPERED / "impossible_timing" / "result.json", fresh())
     write(TAMPERED / "impossible_timing" / "expect.json", {
         "description": "The challenge commit arrives 1 s after the issue. The minimum for this work is 60 s.",
         "challenge_min_ms": 60000, "commit_after_ms": 1000, "status": "rejected", "check": "challenge",

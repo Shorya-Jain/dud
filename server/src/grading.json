@@ -1,0 +1,185 @@
+{
+ "version": 1,
+ "registry_recent_days": 30,
+ "rules": [
+  {
+   "id": "uncorrectable_ecc_since_reset",
+   "value": "history.ecc.volatile.uncorrectable",
+   "check": {
+    "max": 0
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "quick",
+    "full"
+   ],
+   "explain": {
+    "pass": "The GPU has no uncorrectable ECC errors since the last reset.",
+    "fail": "The GPU has {value} uncorrectable ECC errors since the last reset. The limit is {limit}.",
+    "missing": "dud cannot read the uncorrectable ECC count."
+   }
+  },
+  {
+   "id": "pending_row_remap",
+   "value": "history.row_remap.pending",
+   "check": {
+    "is": false
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "quick",
+    "full"
+   ],
+   "explain": {
+    "pass": "The GPU has no pending row remap.",
+    "fail": "The GPU has a pending row remap. A reset is necessary before the repair takes effect.",
+    "missing": "dud cannot read the row remap state."
+   }
+  },
+  {
+   "id": "failed_row_remap",
+   "value": "history.row_remap.failed",
+   "check": {
+    "is": false
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "quick",
+    "full"
+   ],
+   "explain": {
+    "pass": "The GPU has no failed row remap.",
+    "fail": "A row remap failed. The GPU had no spare row for a bad memory row.",
+    "missing": "dud cannot read the failed row remap state."
+   }
+  },
+  {
+   "id": "banks_without_spare_rows",
+   "value": "history.row_remap.bank_availability.none",
+   "check": {
+    "max": 0
+   },
+   "verdict": "KILL",
+   "if_missing": "skip",
+   "modes": [
+    "quick",
+    "full"
+   ],
+   "explain": {
+    "pass": "All memory banks have spare rows.",
+    "fail": "{value} memory banks have no spare rows. The next error in these banks cannot be repaired.",
+    "missing": "dud cannot read the bank availability."
+   }
+  },
+  {
+   "id": "low_bank_availability",
+   "value": "history.row_remap.bank_availability.low",
+   "check": {
+    "max": 0
+   },
+   "verdict": "KILL",
+   "if_missing": "skip",
+   "modes": [
+    "quick",
+    "full"
+   ],
+   "explain": {
+    "pass": "No memory bank has low availability of spare rows.",
+    "fail": "{value} memory banks have low availability of spare rows. The limit is {limit}.",
+    "missing": "dud cannot read the bank availability."
+   }
+  },
+  {
+   "id": "dcgm_diagnostic",
+   "value": "diag.dcgm_result",
+   "check": {
+    "not_in": [
+     "fail"
+    ]
+   },
+   "verdict": "KILL",
+   "if_missing": "skip",
+   "modes": [
+    "full"
+   ],
+   "explain": {
+    "pass": "The DCGM diagnostic did not find a failure.",
+    "fail": "The DCGM diagnostic found a failure on this GPU.",
+    "missing": "The DCGM diagnostic did not run."
+   }
+  },
+  {
+   "id": "new_uncorrectable_errors_during_test",
+   "value": "diag.ecc_uncorrectable_delta",
+   "check": {
+    "max": 0
+   },
+   "verdict": "KILL",
+   "if_missing": "skip",
+   "modes": [
+    "full"
+   ],
+   "explain": {
+    "pass": "The GPU had no new uncorrectable ECC errors during the test.",
+    "fail": "The GPU had {value} new uncorrectable ECC errors during the test.",
+    "missing": "dud cannot compare the ECC counts before and after the test."
+   }
+  },
+  {
+   "id": "sustained_performance",
+   "value": "perf.sustained_bf16_tflops",
+   "check": {
+    "min_spec_fraction": 0.55,
+    "spec": "bf16_dense_tflops"
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "full"
+   ],
+   "explain": {
+    "pass": "Sustained BF16 performance is {value} TFLOPS, {value_pct} of the datasheet value of {spec_value}.",
+    "fail": "Sustained BF16 performance is {value} TFLOPS, only {value_pct} of the datasheet value. The limit is {limit_pct}.",
+    "missing": "dud did not measure the sustained performance."
+   }
+  },
+  {
+   "id": "memory_bandwidth",
+   "value": "perf.hbm_gbps",
+   "check": {
+    "min_spec_fraction": 0.7,
+    "spec": "hbm_gbps"
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "full"
+   ],
+   "explain": {
+    "pass": "Memory bandwidth is {value} GB/s, {value_pct} of the datasheet value of {spec_value}.",
+    "fail": "Memory bandwidth is {value} GB/s, only {value_pct} of the datasheet value. The limit is {limit_pct}.",
+    "missing": "dud did not measure the memory bandwidth."
+   }
+  },
+  {
+   "id": "persistent_throttling",
+   "value": "perf.throttle_hw_fraction",
+   "check": {
+    "max": 0.1
+   },
+   "verdict": "KILL",
+   "if_missing": "unknown",
+   "modes": [
+    "full"
+   ],
+   "explain": {
+    "pass": "Thermal or hardware slowdown was active in {value_pct} of the load test.",
+    "fail": "Thermal or hardware slowdown was active in {value_pct} of the load test. The limit is {limit_pct}.",
+    "missing": "dud did not record the throttle reasons during the load test."
+   }
+  }
+ ]
+}

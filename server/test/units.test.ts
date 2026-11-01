@@ -143,3 +143,16 @@ test("server messages keep sentences to 20 words (Simplified Technical English)"
   for (const m of Object.values(MESSAGES))
     for (const sentence of m.split(/(?<=[.!?])\s+/)) assert.ok(sentence.split(/\s+/).length <= 20, sentence);
 });
+
+test("the registry grades like the Python client", async () => {
+  const { gradeGpu } = await import("../src/grade.ts");
+  for (const name of FIXTURES) {
+    const doc = serverFixture(name);
+    for (const g of doc.gpus) {
+      const v = gradeGpu(g, "full");
+      assert.equal(v.verdict, g.verdict.verdict, `${name} GPU ${g.index}`);
+      assert.deepEqual(v.results.map((r) => [r.rule, r.result, r.text]),
+        g.verdict.results.map((r: any) => [r.rule, r.result, r.text]), `${name} GPU ${g.index}`);
+    }
+  }
+});

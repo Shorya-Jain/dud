@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>dud GPU registry</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Skip the 90-minute GPU test when someone already did it. dud checks a rented NVIDIA GPU against a shared registry in approximately 1 minute.">
+<meta name="description" content="Skip the 60-minute GPU test when someone already did it. dud checks a rented NVIDIA GPU against a shared registry in approximately 1 minute.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
@@ -259,7 +259,7 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
       <div class="hero-text">
         <span class="label">For rented H100, H200 and A100 GPUs</span>
         <h1>Skip the GPU test when someone already did it.</h1>
-        <p class="lede">A full GPU test takes 60 to 90 minutes. dud checks a rented GPU against a shared registry in approximately 1 minute.</p>
+        <p class="lede">A full GPU test takes 30 to 60 minutes. dud checks a rented GPU against a shared registry in approximately 1 minute.</p>
         <p>If another renter tested the GPU recently and it passed, start your work. If the GPU has a KILL verdict, dud warns you before you lose time on it.</p>
         <div class="cmds" aria-label="Command">
           <div class="cmd"><code>dud quick</code><small>approximately 1 minute</small><button class="copy" type="button" data-copy="dud quick">Copy</button></div>
@@ -273,7 +273,7 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
             <span class="label">GPU 0 · H100 SXM5 80GB</span>
           </div>
           <p class="outcome-title">Tested 6 days ago. Start your work.</p>
-          <p>The registry has 4 readings from 3 accounts. The last full test passed. The error counts did not go up after it.</p>
+          <p>A full test 6 days ago gave KEEP. The error counts did not go up after it.</p>
         </div>
         <div class="outcome">
           <div class="outcome-head">
@@ -283,7 +283,7 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
           <p class="outcome-title">On record since 2 September. Ask for a different GPU.</p>
           <p>An earlier full test found a pending row remap and 2 uncorrectable ECC errors. The counts are higher now.</p>
         </div>
-        <p class="note">Example output of <code>dud quick</code>. Verdicts come in a later version of dud.</p>
+        <p class="note">Example output of <code>dud quick</code>.</p>
       </div>
     </div>
   </section>
@@ -352,7 +352,7 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
         <div class="verdict">
           <span class="stamp" aria-label="Verdict: KILL">KILL</span>
           <p>This GPU has a pending row remap and 2 uncorrectable ECC errors since the last reset.</p>
-          <p class="note">Example verdict. Verdicts come in a later version of dud.</p>
+          <p class="note">Example verdict. The registry calculates it from the raw readings, with the same rules as dud.</p>
         </div>
       </article>
     </div>
@@ -372,16 +372,18 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
             <li>Reads the identity and the history of each GPU on the node.</li>
             <li>Compares the GPU with its earlier registry readings, if you have registry access.</li>
             <li>Sends only card IDs to the registry.</li>
+            <li>Gives a verdict for each GPU: KEEP, KILL or UNKNOWN.</li>
             <li>Writes a result file and a report on the node.</li>
           </ul>
         </div>
         <div class="panel">
-          <span class="time">dud full · approximately 60 to 90 minutes</span>
+          <span class="time">dud full · approximately 30 to 60 minutes</span>
           <h3>Full test</h3>
           <ul class="plain">
             <li>Does everything that the quick test does.</li>
+            <li>Runs the DCGM diagnostic, if DCGM is installed.</li>
             <li>Does the registry challenge, which proves that a real GPU did the work.</li>
-            <li>Adds the DCGM test, performance tests and a load test in a later version.</li>
+            <li>Measures BF16, FP8 and memory speed, and runs a 15-minute load test.</li>
             <li>Sends the result to the registry. An accepted full test gives 30 days of registry access.</li>
           </ul>
         </div>
@@ -522,7 +524,7 @@ footer .wrap { padding-block: 28px 40px; display: flex; flex-wrap: wrap; justify
 
 <footer>
   <div class="wrap">
-    <span>dud 0.1.0. The registry is in test.</span>
+    <span>dud 0.2.0. The registry is in test.</span>
     <span><a href="https://github.com/Shorya-Jain/dud">Source code on GitHub</a> · Apache-2.0</span>
   </div>
 </footer>

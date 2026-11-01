@@ -30,7 +30,7 @@ The dev server runs the real registry code on your Mac. It needs no Cloudflare a
 7. Run a mock full test: `DUD_MOCK=1 PYTHONPATH=src .venv/bin/python -m dud full`
 8. Make sure that the last line says "You have registry access until".
 9. Run a mock quick test: `DUD_MOCK=1 PYTHONPATH=src .venv/bin/python -m dud quick`
-10. Make sure that the output says "the registry has 1 earlier readings".
+10. Make sure that the output says "earlier readings in the registry: 1".
 11. In the first terminal, push Ctrl+C to stop the dev server.
 
 ## Step 1: Install the Cloudflare tool (wrangler)
@@ -175,11 +175,11 @@ The links on the website go to the GitHub repository. Make the repository public
 2. Change the value in `[vars]`. The defaults and the full list are in `server/src/env.ts`.
 3. Run `cd ~/Documents/dud/server && npx wrangler deploy`.
 
-`REQUIRE_LOAD` is `"false"` now, because the CLI has no load test yet. Set it to `"true"` when milestone 2 is in the CLI that people use.
+`REQUIRE_LOAD` is `"true"`. The registry rejects a full test that has no load test. dud 0.1.0 has no load test, so do not use it with this registry.
 
-## Change the datasheet values or challenge limits
+## Change the datasheet values, the challenge limits or the grading rules
 
-1. Edit `specs.yaml`.
+1. Edit `specs.yaml` or `grading.yaml`.
 2. Run `.venv/bin/python scripts/build_specs.py`.
 3. Run the tests: `cd server && npm test`
 4. Deploy: `npx wrangler deploy`
@@ -190,7 +190,9 @@ The links on the website go to the GitHub repository. Make the repository public
    - `cd ~/Documents/dud && .venv/bin/python -m pytest -q`
    - `cd server && npm test`
 2. Deploy: `npx wrangler deploy`
-3. If you added a file in `server/migrations/`, apply it: `npx wrangler d1 migrations apply dud-registry --remote`
+3. If there is a new file in `server/migrations/`, apply it: `npx wrangler d1 migrations apply dud-registry --remote`
+
+   dud 0.2.0 adds `0002_verdict_reasons.sql`. If you deployed the registry before 0.2.0, apply it.
 
 ## See what the registry does
 

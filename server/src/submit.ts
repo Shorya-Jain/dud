@@ -6,6 +6,7 @@ import type { ChallengeRow, Round } from "./challenge.ts";
 import { b64decode, gunzip, gzip, hmacHex, randomHex, sha256Hex } from "./crypto.ts";
 import { iso } from "./env.ts";
 import { ApiError, json, readJson } from "./http.ts";
+import { gradeGpu } from "./grade.ts";
 import { checkLoad } from "./load.ts";
 import { identify } from "./models.ts";
 import { validate } from "./schema.ts";
@@ -17,8 +18,9 @@ import schema from "../../src/dud/schema/result.v1.json" with { type: "json" };
 type Result = "pass" | "flag" | "reject";
 type Check = { name: string; result: Result; detail: string | null };
 
-// Raw outputs that must never repeat between submissions.
-const REPLAY_IDS = /^(smi_q_x|dcgm.*|load.*|perf.*)$/;
+// Raw outputs that must never repeat between submissions. Each one contains a time.
+// DCGM output is not here: two honest runs on the same node can give the same text.
+const REPLAY_IDS = /^(smi_q_x|load.*|perf.*)$/;
 const COUNTERS = ["ecc_agg_corr", "ecc_agg_unc", "remap_corr", "remap_unc", "retired_corr", "retired_unc"] as const;
 const MINUTE = 60_000;
 
@@ -53,6 +55,15 @@ export async function cardKey(ctx: Ctx, kind: "card" | "serial", clientHash: str
   return hmacHex(ctx.env.CARD_ID_PEPPER, `${kind}:${clientHash}`);
 }
 
+// The registry's verdict. It ignores the verdict that the client sends.
+function serverVerdict(doc: any, gpu: any) {
+  const v = gradeGpu(gpu, doc.run.mode === "quick" ? "quick" : "full");
+  return {
+    verdict: v.verdict,
+    verdict_json: JSON.stringify(v.results.filter((r) => r.result === "fail" || r.result === "missing")),
+  };
+}
+
 function readingFrom(doc: any, gpu: any) {
   const blocked = JSON.stringify(gpu).split('"status":"blocked"').length - 1;
   const xid = val(gpu, "history.xid_events");
@@ -78,8 +89,8 @@ function readingFrom(doc: any, gpu: any) {
     retired_unc: val(gpu, "history.retired_pages.uncorrectable"),
     xid_count: Array.isArray(xid) ? xid.length : null,
     blocked_count: blocked,
-    verdict: gpu.verdict ? String(gpu.verdict.verdict ?? "") || null : null,
     perf_json: gpu.perf ? JSON.stringify(gpu.perf) : null,
+    ...serverVerdict(doc, gpu),
   };
 }
 
@@ -218,7 +229,8 @@ function checkTiming(ctx: Ctx, c: Checks, doc: any, row: ChallengeRow, smiTimest
   if (row.created_ms < start - 10 * MINUTE || row.created_ms > end) problems.push("the challenge is not inside the test time");
   if (row.committed_ms !== null && row.committed_ms > end + 5 * MINUTE) problems.push("the challenge commit is after the test");
   const loadMin = doc.run.options.load_minutes;
-  if (doc.gpus.some((g: any) => g.load) && loadMin && dur < loadMin * MINUTE) problems.push("the test is shorter than the load time");
+  const devMock = doc.run.mock && ctx.cfg.ALLOW_MOCK;
+  if (!devMock && doc.gpus.some((g: any) => g.load) && loadMin && dur < loadMin * MINUTE) problems.push("the test is shorter than the load time");
   if (problems.length) return c.reject("timing", problems.join("; "));
 
   if (smiTimestamp === null || doc.run.utc_offset_s === null) return c.flag("timing", "dud cannot check the nvidia-smi time");
@@ -327,6 +339,11 @@ export async function submit(ctx: Ctx): Promise<Response> {
     checkTiming(ctx, c, doc, challenge.row, smi.top.timestamp.ok ? smi.top.timestamp.value : null);
     checkLoads(ctx, c, doc);
     if (!c.rejected) await checkHistory(ctx, c, doc, keys);
+    if (!c.rejected) {
+      const mine = doc.gpus.map((g: any) => `GPU ${g.index} ${serverVerdict(doc, g).verdict}`).join(", ");
+      const theirs = doc.gpus.map((g: any) => g.verdict?.verdict ?? "none").join(", ");
+      c.pass("verdict", `registry: ${mine}; client: ${theirs}`);
+    }
     checkAccount(ctx, c, account);
   } catch (e) {
     if (!(e instanceof Stop)) throw e;
@@ -373,12 +390,12 @@ export async function submit(ctx: Ctx): Promise<Response> {
       stmts.push(db.prepare(
         "INSERT INTO readings (submission_id, card_id, account_id, status, observed_at, model_key, provider, driver_version, vbios, " +
           "memory_total_mib, ecc_vol_corr, ecc_vol_unc, ecc_agg_corr, ecc_agg_unc, remap_corr, remap_unc, remap_pending, remap_failed, " +
-          "bank_max, bank_high, bank_partial, bank_low, bank_none, retired_corr, retired_unc, xid_count, blocked_count, verdict, perf_json, gpu_json) " +
-          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "bank_max, bank_high, bank_partial, bank_low, bank_none, retired_corr, retired_unc, xid_count, blocked_count, verdict, verdict_json, perf_json, gpu_json) " +
+          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       ).bind(id, keys[i], account.id, status, doc.run.started_at, r.model_key, doc.run.provider.reported, r.driver_version, r.vbios,
         r.memory_total_mib, r.ecc_vol_corr, r.ecc_vol_unc, r.ecc_agg_corr, r.ecc_agg_unc, r.remap_corr, r.remap_unc, r.remap_pending,
         r.remap_failed, r.bank_max, r.bank_high, r.bank_partial, r.bank_low, r.bank_none, r.retired_corr, r.retired_unc, r.xid_count,
-        r.blocked_count, r.verdict, r.perf_json, JSON.stringify(g)));
+        r.blocked_count, r.verdict, r.verdict_json, r.perf_json, JSON.stringify(g)));
     }
   }
   if (grants) stmts.push(...grantAccess(ctx, account.id, id, keys));

@@ -1,0 +1,31 @@
+{
+  "gpus": {
+    "0": {
+      "bf16_tflops": 248.6,
+      "fp8_tflops": null,
+      "hbm_gbps": 1712.0,
+      "load": {
+        "sm_clock": 1410,
+        "mem_clock": 1512,
+        "temp_start": 40,
+        "temp_end": 88,
+        "power": 238,
+        "power_jitter": 8,
+        "tflops": 162.0,
+        "slow_clock_drop": 420,
+        "throttle": [
+          {
+            "mask": 64,
+            "fraction": 0.4,
+            "after_s": 240
+          },
+          {
+            "mask": 4,
+            "fraction": 0.2
+          }
+        ]
+      },
+      "fp8_tflops_note": "compute capability 8.0 has no FP8 tensor cores"
+    }
+  }
+}

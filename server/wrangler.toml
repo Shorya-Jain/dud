@@ -30,8 +30,8 @@ CHALLENGE_TTL_HOURS = "3"
 CARD_UNLOCK_DAYS = "30"
 NEW_GITHUB_ACCOUNT_DAYS = "30"
 CONTRIBUTOR_CAP = "0.1"
-# Set to "true" when milestone 2 (the load test) is in the CLI.
-REQUIRE_LOAD = "false"
+# dud 0.2.0 and later send a load test. Results without one give no access.
+REQUIRE_LOAD = "true"
 
 # Secrets (do not put them in this file). Set them with:
 #   npx wrangler secret put GITHUB_CLIENT_SECRET

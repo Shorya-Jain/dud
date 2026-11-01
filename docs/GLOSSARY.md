@@ -46,6 +46,12 @@ Do not use the words in the "Do not use" column.
 | quick test | The test that `dud quick` does. It takes approximately 1 minute. | quick check, scan |
 | full test | The test that `dud full` does. It takes approximately 60 to 90 minutes. | full diagnostic, deep scan |
 | verdict | The result of the grading rules: KEEP, KILL or UNKNOWN. | grade, score, rating |
+| grading rule | One check in grading.yaml. A failed grading rule gives the verdict KILL. | policy, criterion |
+| datasheet value | A value from the NVIDIA datasheet, in specs.yaml. | spec sheet number, nominal value |
+| DCGM diagnostic | The NVIDIA test `dcgmi diag -r 3`. | DCGM scan, health scan |
+| performance test | A measurement of BF16, FP8, memory or GPU-to-GPU speed. | benchmark run, speed test |
+| load test | Matrix work on every GPU for a set time, with one sample each second. | burn-in, stress run |
+| sustained performance | The median BF16 speed in the load test, after the first 30 seconds. | average speed |
 | registry | The shared record of results for each card ID. | database |
 | challenge | A task from the registry that proves that a GPU did the full test. | puzzle, captcha |
 | nonce | A single-use random number that the registry gives for one challenge. | salt, seed value |

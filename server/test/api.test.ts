@@ -82,6 +82,20 @@ test("every fixture node passes", async () => {
   }
 });
 
+test("the registry stores its own verdict, not the client's", async () => {
+  const h = new Harness();
+  const t = await h.login();
+  const doc = serverFixture("a100_80gb_pcie");
+  for (const g of doc.gpus) g.verdict.verdict = "KEEP"; // A client that lies about its verdict.
+  const r = (await fullFlow(h, t, doc)).submit!;
+  assert.equal(r.body.status, "accepted");
+  const look = await h.call("GET", `/v1/cards/${doc.gpus[0].card.uuid_sha256.value}`, undefined, t);
+  assert.equal(look.body.readings[0].verdict, "KILL");
+  assert.ok(look.body.readings[0].verdict_reasons.some((x: string) => x.includes("Sustained BF16 performance")));
+  const log = h.sql("SELECT detail FROM submission_checks WHERE check_name = 'verdict'")[0] as any;
+  assert.match(log.detail, /registry: GPU 0 KILL; client: KEEP/);
+});
+
 test("the daily lookup quota gives 429", async () => {
   const h = new Harness({ DAILY_LOOKUP_QUOTA: "3" });
   const t = await h.login();
@@ -272,6 +286,7 @@ test("load test required: missing or flat load is rejected, a plausible load pas
     const t = await h.login();
     const doc = serverFixture("a100_80gb_pcie");
     doc.run.options.load_minutes = 2;
+    doc.gpus[0].load = null;
     if (load === "ok") doc.gpus[0].load = plausibleLoad(2);
     if (load === "flat") {
       const l = plausibleLoad(2);

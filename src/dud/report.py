@@ -134,6 +134,50 @@ def _connections(host: dict) -> str:
     return table + "\n" + T.CONNECTIONS_LEGEND + "\n"
 
 
+DIAG_ROWS = [
+    ("diag.dcgm_result", None), ("diag.ecc_uncorrectable_delta", None),
+    ("diag.ecc_correctable_delta", None), ("diag.row_remap_pending_after", None),
+]
+PERF_ROWS = [
+    ("perf.bf16_tflops", "TFLOPS", "bf16_dense_tflops"), ("perf.fp8_tflops", "TFLOPS", "fp8_dense_tflops"),
+    ("perf.hbm_gbps", "GB/s", "hbm_gbps"), ("perf.sustained_bf16_tflops", "TFLOPS", "bf16_dense_tflops"),
+    ("perf.throttle_hw_fraction", "%", None), ("perf.power_capped_fraction", "%", None),
+    ("perf.max_temp_c", "C", None),
+]
+
+
+def _perf_table(gpu: dict) -> str:
+    from .grade import spec_value
+
+    key = gpu["identity"]["model_key"]["value"]
+    rows = []
+    for path, unit, spec_key in PERF_ROWS:
+        f = get_path(gpu, path)
+        if f is None:
+            continue
+        if f["status"] != "ok":
+            value = T.STATUS[f["status"]]
+        elif unit == "%":
+            value = f"{f['value'] * 100:.1f} %"
+        else:
+            value = fmt_value(f["value"], unit)
+        spec = spec_value(key, spec_key) if spec_key else None
+        frac = f"{f['value'] / spec * 100:.0f} %" if spec and f["status"] == "ok" else T.DASH
+        rows.append((T.LABELS[path], value, fmt_value(spec, unit) if spec else T.DASH, frac))
+    return _table([T.COL_ITEM, T.COL_VALUE, T.COL_SPEC, T.COL_FRACTION], rows)
+
+
+def _p2p(doc: dict) -> str | None:
+    f = doc["node"].get("p2p_bandwidth")
+    if not f or f["status"] != "ok":
+        return None
+    pairs = f["value"]["pairs"]
+    idx = sorted({p["src"] for p in pairs} | {p["dst"] for p in pairs})
+    cell = {(p["src"], p["dst"]): p["gbps"] for p in pairs}
+    rows = [[f"GPU{s}"] + [("X" if s == d else fmt_value(cell.get((s, d)))) for d in idx] for s in idx]
+    return _table([""] + [f"GPU{d}" for d in idx], rows) + "\n" + T.P2P_NOTE + "\n"
+
+
 def _registry_card(doc: dict, gpu: dict):
     reg = doc.get("registry") or {}
     return reg.get("cards", {}).get(gpu["card"]["uuid_sha256"]["value"] or "")
@@ -196,7 +240,13 @@ def render(doc: dict) -> str:
     out.append(_table([T.COL_ITEM, T.COL_VALUE], run_rows))
 
     out.append(f"## {T.SECTION_VERDICT}\n")
-    out.append((T.NO_VERDICT if doc["node"]["verdict"] is None else str(doc["node"]["verdict"])) + "\n")
+    nv = doc["node"]["verdict"]
+    if nv is None:
+        out.append(T.NO_VERDICT + "\n")
+    else:
+        out.append(f"**{nv['verdict']}**. {nv['summary']}\n")
+        out.append(_table([T.SCOPE_GPU.format(index="").strip(), T.SECTION_VERDICT, T.COL_INFO],
+                          [(g["index"], g["verdict"]["verdict"], g["verdict"]["summary"]) for g in doc["gpus"] if g.get("verdict")]))
     reg_lines = registry_lines(doc)
     if reg_lines:
         out.append(f"## {T.SECTION_REGISTRY}\n")
@@ -208,6 +258,10 @@ def render(doc: dict) -> str:
     out.append(_rows(host, HOST_ROWS))
     out.append(f"### {T.SECTION_CONNECTIONS}\n")
     out.append(_connections(host))
+    p2p = _p2p(doc)
+    if p2p:
+        out.append(f"### {T.SECTION_P2P}\n")
+        out.append(p2p)
     host_missing = _not_read(host)
     if host_missing:
         out.append(f"### {T.SECTION_NOT_READ}\n")
@@ -219,6 +273,11 @@ def render(doc: dict) -> str:
     for gpu in doc["gpus"]:
         name = gpu["identity"]["name"]["value"] or T.DASH
         out.append(f"## GPU {gpu['index']}: {name}\n")
+        if gpu.get("verdict"):
+            out.append(T.VERDICT_LINE.format(verdict=f"**{gpu['verdict']['verdict']}**", summary=gpu["verdict"]["summary"]) + "\n")
+            out.append(f"### {T.SECTION_CHECKS}\n")
+            out.append(_table([T.COL_RULE, T.COL_RESULT, T.COL_INFO],
+                              [(r["rule"], T.RESULTS[r["result"]], r["text"]) for r in gpu["verdict"]["results"]]))
         out.append(T.CARD_ID_NOTE + "\n")
         out.append(f"### {T.SECTION_IDENTITY}\n")
         out.append(_rows(gpu, IDENTITY_ROWS))
@@ -233,6 +292,16 @@ def render(doc: dict) -> str:
         else:
             out.append(_table([T.COL_XID, T.COL_UPTIME, T.COL_MESSAGE],
                               [(e["xid"], fmt_value(e["uptime_s"]), e["message"]) for e in xid["value"]]))
+        if gpu.get("perf"):
+            out.append(f"### {T.SECTION_PERF}\n")
+            out.append(_perf_table(gpu))
+        if gpu.get("diag"):
+            out.append(f"### {T.SECTION_DIAG}\n")
+            out.append(_rows(gpu, DIAG_ROWS))
+            dcgm_f = gpu["diag"]["dcgm"]
+            if dcgm_f["status"] == "ok":
+                out.append(_table([T.COL_TEST, T.COL_RESULT, T.COL_INFO],
+                                  [(t["name"], T.RESULTS.get(t["result"], t["result"]), t["info"] or "") for t in dcgm_f["value"]["tests"]]))
         reg_table = _registry_table(doc, gpu)
         if reg_table:
             out.append(f"### {T.SECTION_REGISTRY}\n")
@@ -266,6 +335,7 @@ def terminal_summary(doc: dict) -> str:
         blocked = sum(1 for _, f in iter_fields(gpu) if f["status"] == "blocked")
         card = gpu["card"]["uuid_sha256"]
         rows.append((
+            gpu["verdict"]["verdict"] if gpu.get("verdict") else T.DASH,
             str(gpu["index"]),
             cell(gpu["identity"]["name"]),
             card["value"][:16] if card["status"] == "ok" else T.STATUS[card["status"]],

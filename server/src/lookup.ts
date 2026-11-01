@@ -50,6 +50,7 @@ export async function lookupCard(ctx: Ctx, clientCardId: string): Promise<Respon
       xid_count: r.xid_count,
       blocked_values: r.blocked_count,
       verdict: r.verdict,
+      verdict_reasons: r.verdict_json ? JSON.parse(r.verdict_json).map((x: any) => x.text) : [],
       perf: r.perf_json ? JSON.parse(r.perf_json) : null,
       trust: r.contributor_trust < LOW_TRUST ? "low" : "normal",
       yours: r.account_id === a.id,

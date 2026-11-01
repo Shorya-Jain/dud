@@ -1,0 +1,50 @@
+{
+  "gpus": {
+    "0": {
+      "bf16_tflops": 588.0,
+      "fp8_tflops": 1151.0,
+      "hbm_gbps": 1838.0,
+      "load": {
+        "sm_clock": 1755,
+        "mem_clock": 1593,
+        "temp_start": 31,
+        "temp_end": 66,
+        "power": 342,
+        "power_jitter": 6,
+        "tflops": 561.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.7,
+            "after_s": 30
+          }
+        ]
+      }
+    },
+    "1": {
+      "bf16_tflops": 592.0,
+      "fp8_tflops": 1157.0,
+      "hbm_gbps": 1847.0,
+      "load": {
+        "sm_clock": 1755,
+        "mem_clock": 1593,
+        "temp_start": 31,
+        "temp_end": 66,
+        "power": 342,
+        "power_jitter": 6,
+        "tflops": 564.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.7,
+            "after_s": 30
+          }
+        ]
+      }
+    }
+  },
+  "p2p": {
+    "gbps": 24.6,
+    "peer_access": false
+  }
+}

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dud-gpu"
-version = "0.1.0"
+version = "0.2.0"
 description = "Check the health of a rented NVIDIA data center GPU."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -26,7 +26,7 @@ dud = "dud.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-dud = ["schema/*.json"]
+dud = ["schema/*.json", "rules/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

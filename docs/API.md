@@ -92,6 +92,7 @@ Answer (HTTP 200, or 422 if rejected):
 
 `card_id` is the SHA-256 of the GPU UUID (64 hexadecimal characters).
 Answer: `{card_id, contributors, readings: [...], lookups_left_today}`. Only accepted readings from active accounts.
+Each reading has `verdict` (KEEP, KILL or UNKNOWN), calculated by the registry, and `verdict_reasons` (the text of each rule that failed or had no value).
 
 ### `GET /v1/stats/{model_key}?provider=<name>`
 

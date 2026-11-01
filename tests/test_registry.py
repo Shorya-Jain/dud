@@ -174,7 +174,8 @@ def test_end_to_end_full_then_quick(dev_registry, tmp_path, capsys, monkeypatch)
     # After a full test: the quick test shows the earlier reading.
     assert cli.main(["quick", "--out-dir", str(out / "q2")]) == 0
     text = capsys.readouterr().out
-    assert "the registry has 1 earlier readings from 1 accounts" in text, text
+    assert "earlier readings in the registry: 1. Accounts: 1." in text, text
+    assert "GPU 0: KILL." in text  # The fixture GPU has a pending row remap.
     (q2,) = list((out / "q2").iterdir())
     assert "## Registry history" in (q2 / "report.md").read_text()
 

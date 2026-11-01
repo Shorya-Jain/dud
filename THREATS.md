@@ -55,8 +55,11 @@ The settings are in `server/wrangler.toml` and `specs.yaml`.
   - Temperature does not jump and does not fall under load.
   - Power is at least 40 % of the default limit.
 
+- The registry calculates the verdict itself, with the same rules as the client (`grade.ts`). It ignores the verdict in the result. The check log shows both.
+
 **Remaining gap.**
 
+- The performance values (TFLOPS, memory bandwidth) come from the client. The registry cannot measure them again. Only the challenge time and the load physics limit them.
 - The XML is text. A careful forger can edit the XML and the parsed values together. Then only the specs, history, time and physics checks can find the edit.
 - A clean history (no errors) for a card that the registry never saw passes all checks.
 - A forger can make a load series that looks physical.
@@ -69,7 +72,7 @@ The settings are in `server/wrangler.toml` and `specs.yaml`.
 **Defenses.**
 
 - A challenge belongs to one account and can be used only once. After a submission, its status is `used`.
-- The registry keeps the SHA-256 of each important raw output (nvidia-smi XML, DCGM output, load series). A submission with the same raw output as an accepted or flagged submission is rejected (`replay`).
+- The registry keeps the SHA-256 of each important raw output (nvidia-smi XML, performance log). Each one contains a time. A submission with the same raw output as an accepted or flagged submission is rejected (`replay`).
 
 **Remaining gap.**
 

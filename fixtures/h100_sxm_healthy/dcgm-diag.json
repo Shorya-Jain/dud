@@ -1,0 +1,350 @@
+{
+  "DCGM GPU Diagnostic": {
+    "test_categories": [
+      {
+        "category": "Deployment",
+        "tests": [
+          {
+            "name": "Denylist",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "NVML Library",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "CUDA Main Library",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Permissions and OS Blocks",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Persistence Mode",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Environmental Variables",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Page Retirement/Row Remap",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Graphics Processes",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Inforom",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Integration",
+        "tests": [
+          {
+            "name": "PCIe",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Hardware",
+        "tests": [
+          {
+            "name": "GPU Memory",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Diagnostic",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Stress",
+        "tests": [
+          {
+            "name": "Targeted Stress",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Targeted Power",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Memory Bandwidth",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "1",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "2",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "3",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "4",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "5",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "6",
+                "status": "Pass"
+              },
+              {
+                "gpu_ids": "7",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "version": "3.3.7"
+}

@@ -23,6 +23,16 @@ def strings(obj):
 ALL = [s for name, value in vars(T).items() if name.isupper() for s in strings(value)]
 
 
+def _grading_texts():
+    import yaml
+
+    rules = yaml.safe_load((ROOT / "grading.yaml").read_text())["rules"]
+    return [t for r in rules for t in r["explain"].values()]
+
+
+ALL += _grading_texts()
+
+
 def sentences(s: str):
     return [p for p in re.split(r"(?<=[.!?])\s+", s) if p.strip()]
 

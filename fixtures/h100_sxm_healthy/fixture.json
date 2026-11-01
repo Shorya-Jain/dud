@@ -14,6 +14,10 @@
       "exit_code": 0,
       "stdout_file": "dmesg.txt"
     },
+    "dcgmi diag -r 3 -j": {
+      "exit_code": 0,
+      "stdout_file": "dcgm-diag.json"
+    },
     "uname -r": {
       "exit_code": 0,
       "stdout": "5.15.0-105-generic\n"
@@ -24,6 +28,7 @@
     }
   },
   "nvml_file": "nvml.json",
+  "bench_file": "bench.json",
   "files": {
     "/etc/os-release": {
       "text": "PRETTY_NAME=\"Ubuntu 22.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\n"

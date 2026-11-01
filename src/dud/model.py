@@ -9,11 +9,14 @@ import base64
 import gzip
 import hashlib
 import json
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import SCHEMA_VERSION, __version__
+from . import SCHEMA_VERSION, __version__, ids
+
+_GPU_UUID = re.compile(r"GPU-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
 STATUSES = ("ok", "blocked", "not_supported", "error", "skipped")
 FIELD_KEYS = ("value", "status", "source", "raw_ref", "reason", "detail")
@@ -96,7 +99,8 @@ class RawStore:
     def scrub(self, text: str) -> str:
         for raw, mark in self.secrets.items():
             text = text.replace(raw, mark)
-        return text
+        # Safety net: any other GPU UUID in any tool output.
+        return _GPU_UUID.sub(lambda m: ids.marker("uuid", ids.uuid_hash(m.group(0))), text)
 
     def add(self, raw_id: str, kind: str, command: list[str], text: str, *, status: str = "ok",
             exit_code: int | None = None, started_at: str | None = None, duration_ms: int = 0,

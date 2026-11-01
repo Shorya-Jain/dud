@@ -4,34 +4,67 @@ dud checks the health of a rented NVIDIA data center GPU.
 It reads the identity and the history of each GPU on a node, and writes a result file and a report.
 A full test also goes into a shared registry, card by card, like a vehicle history report for GPUs.
 
-This is version 0.1.0.
-It has the quick test, login, the registry challenge and the registry.
-The DCGM test, the performance tests, the load test and the verdict come in a later version.
+This is version 0.2.0.
+It has the quick test, the full test with DCGM, performance tests and a load test, verdicts, login and the registry.
+
+## Status
+
+- All tests pass in mock mode and against the local dev registry.
+- The first test on a real GPU (an A100 SXM4 40GB) is in progress. The real results will set the limits in `grading.yaml` and in the challenge.
+- The registry is not on Cloudflare yet. Until it is, use `--no-submit` with `dud full`, and `--offline` with `dud quick`.
+- dud is not on PyPI yet. Build the wheel from this repository (see "Run a test").
+
+**Skip the test when someone already did it.**
+`dud quick` takes approximately 1 minute.
+If another renter did a full test of the GPU recently and the verdict was KEEP, start your work.
+If the registry has a KILL verdict for the GPU, dud tells you.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `dud quick` | Reads identity and history (approximately 1 minute). If you have registry access, it also shows earlier readings of each GPU. |
-| `dud full` | Does the full test, does the registry challenge, and sends the result to the registry. An accepted full test gives 30 days of registry access. |
+| `dud quick` | Reads identity and history (approximately 1 minute), and gives a verdict for each GPU. If you have registry access, it uses the earlier full tests of each GPU. |
+| `dud full` | Reads identity and history, runs the DCGM diagnostic, does the registry challenge, runs the performance tests and a load test, gives a verdict, and sends the result to the registry (approximately 30 to 60 minutes). An accepted full test gives 30 days of registry access. |
 | `dud login` | Signs you in with GitHub. Use a browser on any computer or phone. |
 | `dud status` | Shows your account, your access and your lookups today. |
 | `dud logout` | Deletes your token from this computer. |
 | `dud report <file>` | Shows the report for a saved result file. |
 
 Flags: `--provider <name>`, `--gpus 0,1`, `--out-dir <folder>`.
-`dud full` also has `--no-submit`, `--skip-dcgm` and `--load-minutes N`.
+`dud full` also has `--no-submit`, `--skip-dcgm`, `--install-dcgm` and `--load-minutes N`.
 `dud quick` also has `--offline`.
 
 ## Run a test
 
-1. Install dud: `pip install dud_gpu-0.1.0-py3-none-any.whl`
-2. Sign in: `dud login`
-3. Run the full test: `dud full --provider <name of the provider>`
-4. Read the report in `dud-results/<folder>/report.md`.
+1. On your computer, make the wheel file: `python3 -m pip wheel --no-deps -w dist .`
+2. Copy `dist/dud_gpu-0.2.0-py3-none-any.whl` to the node.
+3. On the node, install dud: `pip install dud_gpu-0.2.0-py3-none-any.whl`
+4. Sign in: `dud login`
+5. Run the full test: `dud full --provider <name of the provider>`
+6. Read the report in `dud-results/<folder>/report.md`.
+
+To replace an earlier copy of the same version, add `--force-reinstall --no-deps` to the install command in step 3.
 
 The full test needs PyTorch with CUDA.
 If PyTorch is not installed, dud asks before it installs it.
+
+The full test uses the DCGM diagnostic.
+If DCGM is not installed, dud asks before it installs it (Ubuntu or Debian, as root or with sudo).
+To install DCGM without a question, use `--install-dcgm`.
+If dud cannot install DCGM, the full test continues without the DCGM diagnostic.
+
+## Verdicts
+
+Each GPU gets one verdict:
+
+| Verdict | Meaning |
+|---|---|
+| KEEP | All checks passed. |
+| KILL | A check failed, for example uncorrectable ECC errors since the last reset, a pending or failed row remap, low bank availability, a DCGM failure, low sustained performance or constant throttling. |
+| UNKNOWN | dud cannot read a key value, for example because the provider blocks ECC data. |
+
+The rules and their limits are in `grading.yaml`. The report explains each verdict.
+The registry calculates its own verdict with the same rules. It does not use the verdict that the client sends.
 
 ## The registry
 
@@ -73,5 +106,5 @@ cd server && npm test               # registry tests (Node 22.18 or later, no in
 node server/dev.ts                  # local registry for tests by hand
 ```
 
-After a change to `specs.yaml`, run `.venv/bin/python scripts/build_specs.py`.
+After a change to `specs.yaml` or `grading.yaml`, run `.venv/bin/python scripts/build_specs.py`.
 After a change to the fixtures or the schema, run `.venv/bin/python scripts/make_server_fixtures.py`.

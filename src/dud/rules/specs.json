@@ -1,0 +1,283 @@
+{
+ "challenge": {
+  "m": 1024,
+  "n": 1024,
+  "k": 16384,
+  "pool": 8,
+  "batch": 32,
+  "target_seconds": 30,
+  "assumed_efficiency": 0.5,
+  "min_efficiency": 0.25,
+  "network_allowance_seconds": 60,
+  "samples_per_gpu": 2
+ },
+ "models": {
+  "H100-SXM5-80GB": {
+   "name": "NVIDIA H100 SXM5 80GB",
+   "memory_mib": {
+    "min": 81000,
+    "max": 81920,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 690,
+    "max": 700,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   },
+   "fp16_dense_tflops": {
+    "value": 989.4,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   },
+   "bf16_dense_tflops": {
+    "value": 989.4,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   },
+   "fp8_dense_tflops": {
+    "value": 1978.9,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   },
+   "hbm_gbps": {
+    "value": 3350,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   }
+  },
+  "H100-PCIE-80GB": {
+   "name": "NVIDIA H100 PCIe 80GB",
+   "memory_mib": {
+    "min": 81000,
+    "max": 81920,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 300,
+    "max": 350,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf"
+   },
+   "fp16_dense_tflops": {
+    "value": 756.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf",
+    "verify": true
+   },
+   "bf16_dense_tflops": {
+    "value": 756.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf",
+    "verify": true
+   },
+   "fp8_dense_tflops": {
+    "value": 1513.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf",
+    "verify": true
+   },
+   "hbm_gbps": {
+    "value": 2000,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/data-center/h100/PB-11133-001_v01.pdf",
+    "verify": true
+   }
+  },
+  "H100-NVL-94GB": {
+   "name": "NVIDIA H100 NVL 94GB",
+   "memory_mib": {
+    "min": 93000,
+    "max": 96300,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 350,
+    "max": 400,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/",
+    "verify": true
+   },
+   "fp16_dense_tflops": {
+    "value": 835.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/",
+    "verify": true
+   },
+   "bf16_dense_tflops": {
+    "value": 835.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/",
+    "verify": true
+   },
+   "fp8_dense_tflops": {
+    "value": 1670.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/",
+    "verify": true
+   },
+   "hbm_gbps": {
+    "value": 3900,
+    "source": "https://www.nvidia.com/en-us/data-center/h100/"
+   }
+  },
+  "H200-SXM-141GB": {
+   "name": "NVIDIA H200 SXM 141GB",
+   "memory_mib": {
+    "min": 139000,
+    "max": 144500,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 690,
+    "max": 700,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   },
+   "fp16_dense_tflops": {
+    "value": 989.4,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   },
+   "bf16_dense_tflops": {
+    "value": 989.4,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   },
+   "fp8_dense_tflops": {
+    "value": 1978.9,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   },
+   "hbm_gbps": {
+    "value": 4800,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   }
+  },
+  "H200-NVL-141GB": {
+   "name": "NVIDIA H200 NVL 141GB",
+   "memory_mib": {
+    "min": 139000,
+    "max": 144500,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 500,
+    "max": 600,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/",
+    "verify": true
+   },
+   "fp16_dense_tflops": {
+    "value": 835.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/",
+    "verify": true
+   },
+   "bf16_dense_tflops": {
+    "value": 835.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/",
+    "verify": true
+   },
+   "fp8_dense_tflops": {
+    "value": 1670.5,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/",
+    "verify": true
+   },
+   "hbm_gbps": {
+    "value": 4800,
+    "source": "https://www.nvidia.com/en-us/data-center/h200/"
+   }
+  },
+  "A100-SXM4-40GB": {
+   "name": "NVIDIA A100 SXM4 40GB",
+   "memory_mib": {
+    "min": 40000,
+    "max": 40960,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 390,
+    "max": 400,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "fp16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "bf16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "hbm_gbps": {
+    "value": 1555,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   }
+  },
+  "A100-SXM4-80GB": {
+   "name": "NVIDIA A100 SXM4 80GB",
+   "memory_mib": {
+    "min": 80000,
+    "max": 81920,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 390,
+    "max": 500,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf",
+    "verify": true
+   },
+   "fp16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "bf16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "hbm_gbps": {
+    "value": 2039,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   }
+  },
+  "A100-PCIE-40GB": {
+   "name": "NVIDIA A100 PCIe 40GB",
+   "memory_mib": {
+    "min": 40000,
+    "max": 40960,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 245,
+    "max": 250,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "fp16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "bf16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "hbm_gbps": {
+    "value": 1555,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   }
+  },
+  "A100-PCIE-80GB": {
+   "name": "NVIDIA A100 80GB PCIe",
+   "memory_mib": {
+    "min": 80000,
+    "max": 81920,
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
+    "verify": true
+   },
+   "power_default_w": {
+    "min": 295,
+    "max": 300,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "fp16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "bf16_dense_tflops": {
+    "value": 312.0,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   },
+   "hbm_gbps": {
+    "value": 1935,
+    "source": "https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf"
+   }
+  }
+ }
+}

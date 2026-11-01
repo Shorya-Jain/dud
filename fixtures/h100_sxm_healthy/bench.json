@@ -1,0 +1,176 @@
+{
+  "gpus": {
+    "0": {
+      "bf16_tflops": 742.0,
+      "fp8_tflops": 1388.0,
+      "hbm_gbps": 2905.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 33,
+        "temp_end": 68,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 712.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "1": {
+      "bf16_tflops": 745.1,
+      "fp8_tflops": 1393.2,
+      "hbm_gbps": 2916.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 34,
+        "temp_end": 69,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 714.5,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "2": {
+      "bf16_tflops": 748.2,
+      "fp8_tflops": 1398.4,
+      "hbm_gbps": 2927.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 35,
+        "temp_end": 70,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 717.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "3": {
+      "bf16_tflops": 751.3,
+      "fp8_tflops": 1403.6,
+      "hbm_gbps": 2938.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 36,
+        "temp_end": 68,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 719.5,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "4": {
+      "bf16_tflops": 754.4,
+      "fp8_tflops": 1408.8,
+      "hbm_gbps": 2949.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 37,
+        "temp_end": 69,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 722.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "5": {
+      "bf16_tflops": 757.5,
+      "fp8_tflops": 1414.0,
+      "hbm_gbps": 2960.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 38,
+        "temp_end": 70,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 724.5,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "6": {
+      "bf16_tflops": 760.6,
+      "fp8_tflops": 1419.2,
+      "hbm_gbps": 2971.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 39,
+        "temp_end": 68,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 727.0,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    },
+    "7": {
+      "bf16_tflops": 763.7,
+      "fp8_tflops": 1424.4,
+      "hbm_gbps": 2982.0,
+      "load": {
+        "sm_clock": 1980,
+        "mem_clock": 2619,
+        "temp_start": 40,
+        "temp_end": 69,
+        "power": 688,
+        "power_jitter": 9,
+        "tflops": 729.5,
+        "throttle": [
+          {
+            "mask": 4,
+            "fraction": 0.55,
+            "after_s": 60
+          }
+        ]
+      }
+    }
+  },
+  "p2p": {
+    "gbps": 372.0,
+    "peer_access": true
+  }
+}

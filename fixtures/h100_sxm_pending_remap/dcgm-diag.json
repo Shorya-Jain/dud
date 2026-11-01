@@ -1,0 +1,160 @@
+{
+  "DCGM GPU Diagnostic": {
+    "test_categories": [
+      {
+        "category": "Deployment",
+        "tests": [
+          {
+            "name": "Denylist",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "NVML Library",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "CUDA Main Library",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Permissions and OS Blocks",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Persistence Mode",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Environmental Variables",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Page Retirement/Row Remap",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Fail",
+                "warnings": [
+                  {
+                    "warning": "GPU 0 has uncorrectable memory errors and row remappings are pending. Reset the GPU.",
+                    "error_id": 83
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Graphics Processes",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Inforom",
+            "results": [
+              {
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Integration",
+        "tests": [
+          {
+            "name": "PCIe",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Hardware",
+        "tests": [
+          {
+            "name": "GPU Memory",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Diagnostic",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "Stress",
+        "tests": [
+          {
+            "name": "Targeted Stress",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Targeted Power",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          },
+          {
+            "name": "Memory Bandwidth",
+            "results": [
+              {
+                "gpu_ids": "0",
+                "status": "Pass"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "version": "3.3.7"
+}
