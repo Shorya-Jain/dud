@@ -1,13 +1,18 @@
 """The fixture from a real A100 SXM4 40GB (Vast.ai, driver 615). See fixtures/README.md."""
 import json
 
+import pytest
+
 from conftest import FIXTURES, probe, run
 from dud import grade
 from dud.collect import dcgm, smi_xml
 
 NAME = "a100_sxm4_40gb_real"
+# This fixture is not in git. The tests that need it run only where it exists.
+needs_fixture = pytest.mark.skipif(not (FIXTURES / NAME).exists(), reason="the real A100 fixture is not on this computer")
 
 
+@needs_fixture
 def test_identity_and_driver_615_names():
     doc = run(NAME)
     g = doc["gpus"][0]
@@ -25,12 +30,14 @@ def test_memory_is_inside_the_datasheet_range():
     assert spec["min"] <= 39936 <= spec["max"]
 
 
+@needs_fixture
 def test_lowered_power_limit_is_a_finding():
     g = run(NAME)["gpus"][0]
     codes = {f["code"]: f for f in g["findings"]}
     assert codes["power_limit_below_default"]["detail"] == "300 W of 400 W"
 
 
+@needs_fixture
 def test_dcgm_4_7_output():
     parsed = dcgm.parse((FIXTURES / NAME / "dcgm-diag.json").read_text())
     g = dcgm.per_gpu(parsed, 0)
@@ -61,6 +68,7 @@ def test_recovery_action_values():
     assert smi_xml._reset_required(g)["value"] is True
 
 
+@needs_fixture
 def test_fixture_has_no_raw_identifiers():
     spec = json.loads((FIXTURES / NAME / "fixture.json").read_text())
     assert spec["synthetic"] is False

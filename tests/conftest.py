@@ -8,7 +8,9 @@ from dud.probe import MockProbe
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
-FIXTURE_NAMES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]
+# Fixtures from real nodes are not in git (see .gitignore). Tests use them when they are on this computer.
+REAL_FIXTURES = [p.name for p in sorted(FIXTURES.iterdir()) if p.name.endswith("_real") and (p / "fixture.json").exists()]
+FIXTURE_NAMES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden"] + REAL_FIXTURES
 SCHEMA = json.loads((ROOT / "src" / "dud" / "schema" / "result.v1.json").read_text())
 
 

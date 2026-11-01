@@ -27,7 +27,9 @@ from dud.probe import MockProbe  # noqa: E402
 FIX = ROOT / "fixtures"
 SERVER_FIX = ROOT / "server" / "test" / "fixtures"
 TAMPERED = FIX / "tampered"
-FULL_FIXTURES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]
+# Fixtures from real nodes (name ends with "_real") are not in git. They are used when they are on this computer.
+FULL_FIXTURES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden"] + [
+    p.name for p in sorted(FIX.iterdir()) if p.name.endswith("_real") and (p / "fixture.json").exists()]
 
 
 def vectors() -> dict:

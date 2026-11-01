@@ -74,7 +74,9 @@ test("an honest full test is accepted and gives 30 days of access", async () => 
 });
 
 test("every fixture node passes", async () => {
-  for (const name of ["h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]) {
+  // Fixtures from real nodes are not in git. The test uses them when they are on this computer.
+  const real = readdirSync(join(ROOT, "server", "test", "fixtures")).filter((f) => f.endsWith("_real.json")).map((f) => f.slice(0, -5));
+  for (const name of ["h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", ...real]) {
     const h = new Harness();
     const t = await h.login();
     const { submit } = await fullFlow(h, t, serverFixture(name));

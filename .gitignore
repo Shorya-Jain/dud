@@ -9,3 +9,6 @@ server/node_modules/
 server/.wrangler/
 .DS_Store
 *.tgz
+# Fixtures from real nodes stay on the owner's computer.
+fixtures/*_real/
+server/test/fixtures/*_real.json

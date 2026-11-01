@@ -10,7 +10,7 @@ It has the quick test, the full test with DCGM, performance tests and a load tes
 ## Status
 
 - All tests pass in mock mode and against the local dev registry.
-- dud did a full test on a real GPU: an A100 SXM4 40GB on Vast.ai, with DCGM. The verdict was KEEP. That run is now the fixture `a100_sxm4_40gb_real`.
+- dud did a full test on a real GPU: an A100 SXM4 40GB on Vast.ai, with DCGM. The verdict was KEEP. The fixes from that run are in the code. The run itself is not in git.
 - The registry challenge has not run on a real GPU yet. Its time limits are not final.
 - The registry is not on Cloudflare yet. Until it is, use `--no-submit` with `dud full`, and `--offline` with `dud quick`.
 - dud is not on PyPI yet. Build the wheel from this repository (see "Run a test").
