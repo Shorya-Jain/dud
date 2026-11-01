@@ -336,3 +336,15 @@ test("no endpoint lists cards", async () => {
   for (const path of ["/v1/cards", "/v1/cards/", "/v1/readings", "/v1/export", "/v1/stats"])
     assert.equal((await h.call("GET", path, undefined, t)).status, 404, path);
 });
+
+test("without R2 the registry accepts results and keeps no document", async () => {
+  const h = new Harness({ RAW: undefined });
+  const t = await h.login();
+  const r = (await fullFlow(h, t, serverFixture("a100_80gb_pcie"))).submit!;
+  assert.equal(r.body.status, "accepted");
+  const s = h.sql("SELECT id, r2_key FROM submissions")[0] as any;
+  assert.equal(s.r2_key, null);
+  assert.equal(h.sql("SELECT COUNT(*) AS n FROM raw_hashes")[0].n > 0, true);
+  const doc = await h.call("GET", `/v1/admin/submissions/${s.id}/document`, undefined, h.env.ADMIN_TOKEN as string);
+  assert.equal(doc.status, 404);
+});

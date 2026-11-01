@@ -102,7 +102,7 @@ The settings are in `server/wrangler.toml` and `specs.yaml`.
 - Lookups by serial number are not possible. Serial numbers are short and in sequence, so a person could try all of them.
 - Stats give percentiles only (p10, p50, p90). Stats need at least `STATS_MIN_CARDS` (20) cards and at least 1 / `CONTRIBUTOR_CAP` (10) contributors.
 - The registry stores HMAC(`CARD_ID_PEPPER`, card ID), not the card ID. A copy of the database alone does not show which card is which.
-- Clients never touch D1 or R2. R2 is a private bucket.
+- Clients never touch D1 or R2. R2 is optional and private.
 
 **Remaining gap.**
 
@@ -171,7 +171,7 @@ The settings are in `server/wrangler.toml` and `specs.yaml`.
 |---|---|---|
 | A raw UUID or serial number leaves the node | The client replaces them with hashes before it writes or sends anything. The server rejects XML that has a raw UUID. | A new nvidia-smi field with an identifier in an unexpected element. |
 | Hostile XML (very deep, very large) | A small parser with no external entities. Limits on depth (32) and element count (200 000). Body limit `MAX_SUBMISSION_MB` (40). | None known. |
-| Too much server work | Daily limits. Each reveal checks one product (about 0.5 s of CPU). Worker CPU limit 30 s. | Many IP addresses can call login. Cloudflare protection helps. |
+| Too much server work | Daily limits. Each reveal checks one small product (under 1 ms of CPU on a laptop). | Many IP addresses can call login. Cloudflare protection helps. |
 | Admin token theft | The token is a Cloudflare secret. The server compares it in constant time. Every admin action goes into `audit_log`. | One token, no second factor. A future fix is Cloudflare Access in front of `/v1/admin/`. |
 | Pepper change or loss | The deploy guide tells you to keep the pepper safe and never change it. | A lost pepper breaks the link between old and new readings. |
 | A modified client that skips redaction | The server rejects XML with a raw UUID. | The registry cannot protect a user from a client that the user changed. |

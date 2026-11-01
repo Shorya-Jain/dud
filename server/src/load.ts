@@ -8,7 +8,7 @@
 const KEYS = ["t_s", "sm_clock_mhz", "mem_clock_mhz", "temp_c", "power_w", "util_pct", "throttle_mask"];
 
 function median(xs: number[]): number {
-  const s = [...xs].sort((a, b) => a - b);
+  const s = Float64Array.from(xs).sort(); // A typed array sorts numbers without a compare function.
   return s.length ? s[Math.floor(s.length / 2)] : NaN;
 }
 

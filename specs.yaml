@@ -25,18 +25,22 @@ sources:
 
 # The registry challenge (see docs/DESIGN.md, "Challenge"). The server uses
 # these numbers to size the work and to set the time limits.
+# Small products keep the registry's check of one product under 1 ms of CPU, so
+# the registry runs on the Cloudflare Workers free plan (10 ms CPU per request).
+# The GPU does many products in large batches.
 challenge:
-  m: 1024                # Rows of A and of the output.
-  n: 1024                # Columns of B and of the output.
-  k: 16384               # Inner size.
+  m: 128                 # Rows of A and of the output.
+  n: 128                 # Columns of B and of the output.
+  k: 2048                # Inner size.
   pool: 8                # Number of A and of B matrices in the pool.
-  batch: 32              # Products in one GPU call. All products in a batch use the same B.
+  batch: 512             # Products in one GPU call. All products in a batch use the same B.
   target_seconds: 30     # Planned time at assumed_efficiency.
-  assumed_efficiency: 0.5
+  assumed_efficiency: 0.3  # Small products do not reach the datasheet rate.
   # Slower than this fraction of the datasheet FP16 rate = too slow for the claimed model.
-  min_efficiency: 0.25   # verify: CALIBRATE with real runs before launch. Raise it to make faking harder.
+  # CALIBRATE with a real run, then raise it to make faking harder. 0.05 is deliberately wide.
+  min_efficiency: 0.05
   network_allowance_seconds: 60
-  samples_per_gpu: 2     # Products that the server checks for each GPU.
+  samples_per_gpu: 4     # Products that the server checks for each GPU. One request each.
 
 models:
   H100-SXM5-80GB:

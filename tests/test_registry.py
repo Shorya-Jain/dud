@@ -189,3 +189,19 @@ def test_end_to_end_no_submit(dev_registry, tmp_path, capsys, monkeypatch):
     monkeypatch.setenv("DUD_FIXTURE", "a100_80gb_pcie")
     assert cli.main(["full", "--no-submit", "--out-dir", str(tmp_path / "o")]) == 0
     assert T.SUBMIT_SKIPPED in capsys.readouterr().out
+
+
+def test_no_registry_yet(monkeypatch, tmp_path):
+    """A published dud without a registry address must not send data anywhere."""
+    from dud import history, registry
+    from dud import text as T
+
+    monkeypatch.delenv("DUD_API_URL", raising=False)
+    monkeypatch.delenv("DUD_TOKEN", raising=False)
+    monkeypatch.setenv("DUD_HOME", str(tmp_path))
+    monkeypatch.setattr(registry, "DEFAULT_API_URL", None)
+    assert registry.api_url() is None
+    with pytest.raises(registry.RegistryError, match="not available"):
+        registry.Client()
+    out = history.fetch({"gpus": []})
+    assert out["status"] == "no_registry" and out["message"] == T.REGISTRY_NOT_AVAILABLE

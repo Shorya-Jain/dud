@@ -52,7 +52,7 @@ Answer:
 
 ```json
 {"challenge_id": "chl_...", "nonce": "<64 hex>", "issued_at": "...", "expires_at": "...",
- "rounds": [{"gpu_index": 0, "seed": 123, "params": {"m": 1024, "n": 1024, "k": 16384, "pool": 8, "batch": 32}, "count": 431000}]}
+ "rounds": [{"gpu_index": 0, "seed": 123, "params": {"m": 128, "n": 128, "k": 2048, "pool": 8, "batch": 512}, "count": 41800}]}
 ```
 
 The server clock starts now.
@@ -107,7 +107,7 @@ Answer: `{model_key, provider, enough_data, percentiles: {<value>: {p10, p50, p9
 | `POST /v1/admin/flags/{id}/resolve` | Close a flag. Body `{note}` |
 | `GET /v1/admin/submissions?status=flagged` | List submissions |
 | `GET /v1/admin/submissions/{id}` | One submission, its checks and its account |
-| `GET /v1/admin/submissions/{id}/document` | The full result file from R2 |
+| `GET /v1/admin/submissions/{id}/document` | The full result file from R2. 404 if the registry has no R2. |
 | `POST /v1/admin/submissions/{id}/decision` | Body `{decision: "accept" or "reject", note}`. Flagged submissions only |
 | `GET /v1/admin/accounts/{id or login}` | Account, submissions, networks, tokens |
 | `POST /v1/admin/accounts/{id or login}/quarantine` | Body `{on: true or false, note}` |

@@ -92,6 +92,7 @@ SUBMIT_SKIPPED = "dud did not send the result, because you used --no-submit."
 SUBMIT_FAILED = "dud could not send the result. Your result file is on this node. Details: {detail}"
 
 # Registry history in the quick test
+REGISTRY_NOT_AVAILABLE = "The registry is not available yet. dud tests the GPUs, but it does not send or look up results."
 REGISTRY_NOT_LOGGED_IN = "dud did not compare with the registry. Run dud login to compare with earlier readings."
 REGISTRY_CARD_NONE = "GPU {index}: the registry has no earlier readings of this GPU."
 REGISTRY_CARD_HISTORY = "GPU {index}: earlier readings in the registry: {count}. Accounts: {contributors}. First reading: {first}."

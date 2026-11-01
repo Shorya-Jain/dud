@@ -16,9 +16,10 @@ from . import __version__
 from . import text as T
 from .model import DudError
 
-# Set this after you deploy the registry (docs/DEPLOY.md, step 9).
+# The registry (docs/DEPLOY.md, step 8). Use only an address that you own:
+# dud sends tokens and results to it. None: no registry.
 # DUD_API_URL in the environment overrides it.
-DEFAULT_API_URL = "https://dud-registry.REPLACE-WITH-YOUR-SUBDOMAIN.workers.dev"
+DEFAULT_API_URL: str | None = "https://dud-registry.shoryajain99.workers.dev"
 
 GITHUB_DEVICE_URL = "https://github.com/login/device/code"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
@@ -75,7 +76,8 @@ def delete_credentials() -> bool:
         return False
 
 
-def api_url() -> str:
+def api_url() -> str | None:
+    """The registry address, or None if there is no registry yet."""
     if os.environ.get("DUD_API_URL"):
         return os.environ["DUD_API_URL"].rstrip("/")
     creds = load_credentials()
@@ -115,7 +117,10 @@ def _request(method: str, url: str, body=None, headers=None, form: bool = False,
 
 class Client:
     def __init__(self, base: str | None = None, token: str | None = None):
-        self.base = (base or api_url()).rstrip("/")
+        base = base or api_url()
+        if not base:
+            raise RegistryError(T.REGISTRY_NOT_AVAILABLE, code="no_registry")
+        self.base = base.rstrip("/")
         if token is None:
             creds = load_credentials()
             token = creds["token"] if creds else None

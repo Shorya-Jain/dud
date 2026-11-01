@@ -9,6 +9,7 @@ import { identify } from "../src/models.ts";
 import { validate } from "../src/schema.ts";
 import { parseSmi, smiTimestampMs } from "../src/smi.ts";
 import { capWeights, compare, weightedPercentile } from "../src/trust.ts";
+import specs from "../src/specs.json" with { type: "json" };
 import { parseXml, XmlError } from "../src/xml.ts";
 import { loadDoc, plausibleLoad, ROOT, series, serverFixture } from "./fakes.ts";
 
@@ -155,4 +156,12 @@ test("the registry grades like the Python client", async () => {
         g.verdict.results.map((r: any) => [r.rule, r.result, r.text]), `${name} GPU ${g.index}`);
     }
   }
+});
+
+test("the production challenge check fits the free plan CPU budget", () => {
+  // The registry regenerates one A (m x k) and one B (k x n) for each checked product.
+  // Keep this under 1 million entries: approximately 1 ms of CPU. The free plan gives 10 ms.
+  const c = specs.challenge;
+  assert.ok(c.m * c.k + c.k * c.n <= 1_000_000, `${c.m}x${c.n}x${c.k} is too large`);
+  assert.ok(c.m * c.n * 2 <= 64 * 1024, "a revealed product must stay small");
 });

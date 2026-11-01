@@ -18,7 +18,8 @@ export interface R2Bucket {
 
 export interface Env {
   DB: D1Database;
-  RAW: R2Bucket;
+  // Optional. Without it, the registry keeps no copy of submitted documents (only readings and raw hashes).
+  RAW?: R2Bucket;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   CARD_ID_PEPPER: string;

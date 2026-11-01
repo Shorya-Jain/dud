@@ -58,8 +58,9 @@ export async function admin(ctx: Ctx, parts: string[]): Promise<Response> {
     return json({ submission: s, checks, account });
   }
   if (section === "submissions" && id && action === "document" && method === "GET") {
-    const s = await db.prepare("SELECT r2_key FROM submissions WHERE id = ?").bind(id).first<{ r2_key: string }>();
-    const obj = s ? await ctx.env.RAW.get(s.r2_key) : null;
+    if (!ctx.env.RAW) throw new ApiError(404, "not_found", { detail: "This registry does not keep submitted documents." });
+    const s = await db.prepare("SELECT r2_key FROM submissions WHERE id = ?").bind(id).first<{ r2_key: string | null }>();
+    const obj = s?.r2_key ? await ctx.env.RAW.get(s.r2_key) : null;
     if (!obj) throw new ApiError(404, "not_found");
     const bytes = await gunzip(new Uint8Array(await obj.arrayBuffer()), 200_000_000);
     return new Response(bytes, { headers: { "content-type": "application/json" } });

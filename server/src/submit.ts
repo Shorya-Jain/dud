@@ -64,8 +64,17 @@ function serverVerdict(doc: any, gpu: any) {
   };
 }
 
+// Values with status "blocked" in one GPU entry. The load series has no fields, so the walk skips it.
+function countBlocked(o: any): number {
+  if (!o || typeof o !== "object") return 0;
+  if (Array.isArray(o)) return o.reduce((n, x) => n + countBlocked(x), 0);
+  let n = o.status === "blocked" ? 1 : 0;
+  for (const k in o) if (k !== "load") n += countBlocked(o[k]);
+  return n;
+}
+
 function readingFrom(doc: any, gpu: any) {
-  const blocked = JSON.stringify(gpu).split('"status":"blocked"').length - 1;
+  const blocked = countBlocked(gpu);
   const xid = val(gpu, "history.xid_events");
   return {
     model_key: val(gpu, "identity.model_key"),
@@ -361,8 +370,8 @@ export async function submit(ctx: Ctx): Promise<Response> {
   const db = ctx.env.DB;
   const id = "sub_" + randomHex(12);
   const now = iso(ctx.now());
-  const r2Key = `submissions/${id}.json.gz`;
-  await ctx.env.RAW.put(r2Key, await gzip(new TextEncoder().encode(JSON.stringify(doc))));
+  const r2Key = ctx.env.RAW ? `submissions/${id}.json.gz` : null;
+  if (ctx.env.RAW && r2Key) await ctx.env.RAW.put(r2Key, await gzip(new TextEncoder().encode(JSON.stringify(doc))));
   const stmts = [
     db.prepare(
       "INSERT INTO submissions (id, account_id, challenge_id, received_at, status, grants_access, access_eligible, decision_reason, " +

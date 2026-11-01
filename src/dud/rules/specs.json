@@ -1,15 +1,15 @@
 {
  "challenge": {
-  "m": 1024,
-  "n": 1024,
-  "k": 16384,
+  "m": 128,
+  "n": 128,
+  "k": 2048,
   "pool": 8,
-  "batch": 32,
+  "batch": 512,
   "target_seconds": 30,
-  "assumed_efficiency": 0.5,
-  "min_efficiency": 0.25,
+  "assumed_efficiency": 0.3,
+  "min_efficiency": 0.05,
   "network_allowance_seconds": 60,
-  "samples_per_gpu": 2
+  "samples_per_gpu": 4
  },
  "models": {
   "H100-SXM5-80GB": {

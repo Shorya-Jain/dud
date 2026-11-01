@@ -23,7 +23,7 @@ from . import text as T
 from .collect import UnknownGpu, collect, dcgm, smi_xml
 from .collect.common import cmd_failure_field
 from .model import DudError, missing, ok
-from .registry import Client, RegistryError, load_credentials
+from .registry import Client, RegistryError, api_url, load_credentials
 
 
 def _gpus_for_challenge(doc: dict) -> list:
@@ -175,6 +175,9 @@ def run_tests(probe, doc: dict, *, load_minutes: int, skip_dcgm: bool, gpus: lis
 
 def run_full(args, probe, gpus) -> int:
     submit = not args.no_submit
+    if submit and not api_url():
+        print(T.REGISTRY_NOT_AVAILABLE)
+        submit = False
     if submit and not load_credentials():
         raise DudError(T.NOT_LOGGED_IN)
     if not probe.mock:

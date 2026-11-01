@@ -18,6 +18,8 @@ def fetch(doc: dict, client: Client | None = None) -> dict:
     """Return the registry section of a quick-test result."""
     out = {"api_url": api_url(), "checked_at": model.utc_now(), "status": "ok", "message": None, "cards": {}}
     if client is None:
+        if not api_url():
+            return dict(out, status="no_registry", message=T.REGISTRY_NOT_AVAILABLE)
         if not load_credentials():
             return dict(out, status="not_logged_in", message=T.REGISTRY_NOT_LOGGED_IN)
         client = Client()

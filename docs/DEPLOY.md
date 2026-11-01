@@ -12,7 +12,7 @@ Time: approximately 45 minutes.
 You need:
 
 - A Cloudflare account. Make one at https://dash.cloudflare.com/sign-up if you do not have one.
-- The Workers Paid plan (5 USD each month). The challenge check needs more CPU time than the free plan gives.
+- The Workers Free plan is enough to start. Workers Paid (5 USD each month) gives more CPU time for each request. See "Costs".
 - A GitHub account.
 - Node.js 22.18 or later. Check with `node --version`.
 - A password manager, for three secret values.
@@ -71,9 +71,6 @@ The dev server runs the real registry code on your Mac. It needs no Cloudflare a
 1. Run: `npx wrangler login`
 2. A browser window opens. Click **Allow**.
 3. Make sure that wrangler sees your account: `npx wrangler whoami`
-4. In the Cloudflare dashboard (https://dash.cloudflare.com), click **Workers & Pages**.
-5. Click **Plans**.
-6. Select **Workers Paid**.
 
 ## Step 4: Make the D1 database
 
@@ -85,12 +82,17 @@ The dev server runs the real registry code on your Mac. It needs no Cloudflare a
 6. Make the tables: `npx wrangler d1 migrations apply dud-registry --remote`
 7. Type `y` when wrangler asks.
 
-## Step 5: Make the R2 bucket for raw output
+## Step 5: Raw output storage (optional, skip it)
 
-1. In the Cloudflare dashboard, click **R2 Object Storage**.
-2. If Cloudflare asks, enable R2. The free tier is sufficient. Cloudflare can ask for a payment card.
-3. In the terminal, run: `npx wrangler r2 bucket create dud-raw`
-4. Do not enable public access for this bucket. Do not connect a custom domain or an r2.dev address to it. The bucket must stay private.
+The registry does not need R2. Without it, the registry keeps the readings and a SHA-256 hash of each raw output. These are sufficient for all checks.
+Each user keeps the full raw output in their own result file.
+
+To keep a copy of each submitted result file:
+
+1. In the Cloudflare dashboard, click **R2 Object Storage**, and enable R2. Cloudflare can ask for a payment card.
+2. In the terminal, run: `npx wrangler r2 bucket create dud-raw`
+3. In `server/wrangler.toml`, remove the `#` from the four `r2_buckets` lines.
+4. Do not enable public access for this bucket. The bucket must stay private.
 
 ## Step 6: Deploy the Worker
 
@@ -126,7 +128,7 @@ Do not put these values in any file in the project.
 
 1. Open `src/dud/registry.py`.
 2. Find the line that starts with `DEFAULT_API_URL`.
-3. Replace the address on that line with your Worker address from step 6.
+3. Replace `None` with your Worker address from step 6, in quotes. For example: `DEFAULT_API_URL: str | None = "https://dud-registry.your-name.workers.dev"`
 4. Save the file.
 5. Build a new package: `cd ~/Documents/dud && .venv/bin/pip wheel --no-deps . -w dist`
 
@@ -203,5 +205,19 @@ The links on the website go to the GitHub repository. Make the repository public
 
 ## Costs
 
-- Workers Paid: 5 USD each month. It includes 10 million requests and 30 million CPU milliseconds.
-- D1 and R2: the free tiers are sufficient for a long time. One submission is approximately 0.1 to 5 MB in R2.
+- Workers Free: 0 USD. 100,000 requests each day. A full test uses approximately 10 to 40 requests.
+- D1 free tier: 5 GB. The registry stores approximately 0.01 MB for each GPU in each full test.
+- R2: not used, unless you enable it (step 5).
+
+CPU time: the free plan gives 10 ms of CPU for each request.
+Cloudflare measured these values (November 2026, mock 8-GPU and 1-GPU full tests):
+
+| Request | CPU time |
+|---|---|
+| Challenge start, commit, each reveal | 3 to 9 ms |
+| Submission, 1 GPU | 33 ms |
+| Submission, 8 GPUs | 58 to 127 ms |
+
+All requests succeeded. Submissions are more than the free limit, so Cloudflare can stop them with "error 1102: Worker exceeded resource limits".
+To see these errors: **Workers & Pages** > **dud-registry** > **Observability**. Look for outcome `exceededCpu`.
+If they occur, select **Workers Paid** in **Workers & Pages** > **Plans**. No change to the code is necessary.

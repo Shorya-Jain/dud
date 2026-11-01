@@ -4,10 +4,6 @@ main = "src/index.ts"
 compatibility_date = "2025-09-01"
 workers_dev = true
 
-[limits]
-# Each challenge reveal does approximately 0.5 s of CPU work.
-cpu_ms = 30000
-
 [observability]
 enabled = true
 
@@ -17,9 +13,11 @@ database_name = "dud-registry"
 database_id = "972187d0-55a6-4b50-bb44-f76c018f8bcf"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "RAW"
-bucket_name = "dud-raw"
+# Optional: keep a copy of each submitted document in a private R2 bucket.
+# Without it, the registry keeps only readings and raw hashes (no storage costs).
+# [[r2_buckets]]
+# binding = "RAW"
+# bucket_name = "dud-raw"
 
 [vars]
 GITHUB_CLIENT_ID = "REPLACE_WITH_YOUR_GITHUB_CLIENT_ID"  # docs/DEPLOY.md, step 2

@@ -24,9 +24,13 @@ export async function sha256Hex(data: string | Uint8Array): Promise<string> {
   return hex(await sha256(data));
 }
 
+// One imported key for each secret. A submission makes one HMAC for each GPU.
+const hmacKeys = new Map<string, Promise<CryptoKey>>();
+
 export async function hmacHex(key: string, message: string): Promise<string> {
-  const k = await crypto.subtle.importKey("raw", enc.encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return hex(await crypto.subtle.sign("HMAC", k, enc.encode(message)));
+  let k = hmacKeys.get(key);
+  if (!k) hmacKeys.set(key, (k = crypto.subtle.importKey("raw", enc.encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"])));
+  return hex(await crypto.subtle.sign("HMAC", await k, enc.encode(message)));
 }
 
 export function randomHex(bytes: number): string {

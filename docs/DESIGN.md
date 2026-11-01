@@ -11,7 +11,7 @@ Read it before you change the schema, the challenge or a registry check.
 | CLI (`dud`) | `src/dud/` | Python 3.9+, standard library and nvidia-ml-py. PyTorch only for the full-test challenge |
 | Result schema | `src/dud/schema/result.v1.json` | JSON Schema. The CLI tests and the registry both use it |
 | Datasheet values | `specs.yaml` (server copy: `server/src/specs.json`) | YAML |
-| Registry | `server/src/` | TypeScript, Cloudflare Workers, D1, R2 |
+| Registry | `server/src/` | TypeScript, Cloudflare Workers, D1, R2 (optional) |
 | Admin tool | `admin/dud_admin.py` | Python, standard library |
 
 ## Result document (schema version 1)
@@ -83,6 +83,10 @@ A plain hash of the output lets a client send any hash and then compute only the
 Random BF16 values also make exact checks on the server hard.
 The Merkle commit over all digests, and exact integer products, close both problems.
 
+Size: m = n = 128, k = 2048, batch = 512 (`specs.yaml`). Small products keep the server check of one product under 1 ms of CPU, so the registry can run on the Workers free plan.
+The GPU does many products (approximately 42,000 on an A100) in large batches.
+`min_efficiency` is 0.05 until calibration. This limit is wide: a fast consumer GPU can also pass the time check.
+
 To calibrate: run real full tests on each model and record `server_elapsed_ms`. Then set `min_efficiency` (and `assumed_efficiency`) in `specs.yaml` so that honest runs pass with a margin and slower GPUs fail.
 
 ## Full test (milestone 2)
@@ -122,7 +126,7 @@ Mock mode takes the performance values and the load parameters from `fixtures/<n
   - Tests: `challenges`, `submissions`, `submission_checks` (the log of every check).
   - Cards: `cards`, `readings` (one row for each GPU in each submission), `raw_hashes`, `card_unlocks`.
   - Abuse defenses: `daily_usage`, `request_networks`, `admin_flags`, `audit_log`.
-- R2 (private): `submissions/<submission ID>.json.gz`, the full result file with all raw output.
+- R2 (private, optional): `submissions/<submission ID>.json.gz`, the full result file with all raw output. The default deploy has no R2: the registry keeps only readings and raw hashes.
 
 ### Submission checks, in sequence (`server/src/submit.ts`)
 

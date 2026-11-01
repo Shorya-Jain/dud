@@ -80,7 +80,17 @@ def test_cli_errors(mock_env, capsys, monkeypatch):
     assert cli.main(["quick", "--out-dir", str(mock_env)]) == 1
     assert "no_such_fixture" in capsys.readouterr().err
     monkeypatch.setenv("DUD_FIXTURE", "h100_sxm_healthy")
-    assert cli.main(["full", "--out-dir", str(mock_env)]) == 1  # Not signed in.
+    # No registry address: the full test runs, and sends nothing.
+    from dud import registry
+
+    monkeypatch.delenv("DUD_API_URL", raising=False)
+    monkeypatch.setattr(registry, "DEFAULT_API_URL", None)
+    assert cli.main(["full", "--load-minutes", "1", "--out-dir", str(mock_env)]) == 0
+    out = capsys.readouterr().out
+    assert T.REGISTRY_NOT_AVAILABLE in out and T.SUBMIT_SKIPPED in out
+    # A registry address, but not signed in.
+    monkeypatch.setenv("DUD_API_URL", "http://localhost:9")
+    assert cli.main(["full", "--out-dir", str(mock_env)]) == 1
     assert T.NOT_LOGGED_IN in capsys.readouterr().err
     assert cli.main(["status"]) == 1
     bad = mock_env / "bad.json"
