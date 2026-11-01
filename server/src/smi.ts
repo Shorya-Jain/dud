@@ -53,9 +53,11 @@ function bool(el: XmlNode | undefined, path: string): Val {
   return BAD;
 }
 
+// The first path with a usable value, else the first path that exists, else the first path.
 function first(el: XmlNode | undefined, ...paths: string[]): string {
-  if (el) for (const p of paths) if (find(el, p)) return p;
-  return paths[0];
+  if (!el) return paths[0];
+  const present = paths.filter((p) => find(el, p));
+  return present.find((p) => !isBad(raw(el, p))) ?? present[0] ?? paths[0];
 }
 
 function sum(block: XmlNode, tags: string[]): Val {
@@ -108,8 +110,8 @@ export function parseSmi(text: string): SmiDoc {
   const root = parseXml(text);
   if (root.tag !== "nvidia_smi_log") throw new Error("root element is not nvidia_smi_log");
   const top = {
-    driver_version: str(root, "driver_version"),
-    cuda_version: str(root, "cuda_version"),
+    driver_version: str(root, first(root, "driver_version", "kmd_version")),
+    cuda_version: str(root, first(root, "cuda_version", "cuda_umd_version")),
     timestamp: str(root, "timestamp"),
     attached_gpus: num(root, "attached_gpus"),
   };

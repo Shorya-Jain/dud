@@ -2,9 +2,9 @@
  "schema_version": 1,
  "kind": "dud.result",
  "run": {
-  "run_id": "6e3fc620-5be0-4972-bc93-3aa835692def",
+  "run_id": "f03c3ade-b6ff-4a84-bb80-e6b9d9edaf17",
   "mode": "full",
-  "dud_version": "0.1.0",
+  "dud_version": "0.2.0",
   "mock": false,
   "fixture": null,
   "started_at": "2026-10-31T18:59:30.000Z",
@@ -16134,10 +16134,10 @@
    "duration_ms": 0,
    "redactions": [],
    "stderr": null,
-   "sha256": "662cc45b597e197173143e6dc11330f0d44744ace65499d28bfeb500b87430a8",
+   "sha256": "f21a1b8d6feb45c2c2cc0286b457c3d446a01aec6fbab0763b569abd41296f6c",
    "bytes": 571,
    "encoding": "gzip+base64",
-   "content": "H4sIAAAAAAACE72S0Q6CIBiF73kK9l9rA9RWPkdXtuZQsVyZDPDK+e4B4Vptza6645z/24H/jAlhaLt7py+iKbmBHAMjbBtTEif0QPZ5wvI02yS7tIDIsmc5agtNCGMg4YChaul2ERj6ob5aZdQonDFHnmnlbg25VP13BAUM6N+vRZ6E28CbUig1KF+B9/ruPhrhNM2clkwu9UjeefDockJ6o13FNHqqcyUdwGy/wZFCqJLXtdBu0PKbFmGiVW0d8nr2WyL5SEx/TqTLlqewpTZcmZXPQApA8wN/epulOwIAAA=="
+   "content": "H4sIAAAAAAACE72SzQ6CMBCE732KZs9ouiCoPIcnjSEFihJBmracCO8urSVGE39O3jqzX6bdSQdCoaqvtT6LMuMGUgohC5MF4oLhDtdptEnjaJmsoz0EE3uSvZ6ggVAKzB8o5BUms6DQdsVlUkb1whpj4JhKbr4h57x9jxCPAf79WuJIaDpeZkKpTrkKnNfW194IqzG2WoZyrkfy2oEHm+PTS20rxuCuTrm0QBgvI+9IIVTGi0JoO6h4o4WfaFVMDns8+ymRvSSufk7Eecuj31Ibrsznz5Bs90DGG2bjSZg7AgAA"
   }
  ]
 }

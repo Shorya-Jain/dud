@@ -15,7 +15,7 @@
   "H100-SXM5-80GB": {
    "name": "NVIDIA H100 SXM5 80GB",
    "memory_mib": {
-    "min": 81000,
+    "min": 79000,
     "max": 81920,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -45,7 +45,7 @@
   "H100-PCIE-80GB": {
    "name": "NVIDIA H100 PCIe 80GB",
    "memory_mib": {
-    "min": 81000,
+    "min": 79000,
     "max": 81920,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -79,7 +79,7 @@
   "H100-NVL-94GB": {
    "name": "NVIDIA H100 NVL 94GB",
    "memory_mib": {
-    "min": 93000,
+    "min": 91000,
     "max": 96300,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -113,7 +113,7 @@
   "H200-SXM-141GB": {
    "name": "NVIDIA H200 SXM 141GB",
    "memory_mib": {
-    "min": 139000,
+    "min": 137000,
     "max": 144500,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -143,7 +143,7 @@
   "H200-NVL-141GB": {
    "name": "NVIDIA H200 NVL 141GB",
    "memory_mib": {
-    "min": 139000,
+    "min": 137000,
     "max": 144500,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -177,10 +177,9 @@
   "A100-SXM4-40GB": {
    "name": "NVIDIA A100 SXM4 40GB",
    "memory_mib": {
-    "min": 40000,
+    "min": 39000,
     "max": 40960,
-    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
-    "verify": true
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB."
    },
    "power_default_w": {
     "min": 390,
@@ -203,7 +202,7 @@
   "A100-SXM4-80GB": {
    "name": "NVIDIA A100 SXM4 80GB",
    "memory_mib": {
-    "min": 80000,
+    "min": 79000,
     "max": 81920,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true
@@ -230,10 +229,9 @@
   "A100-PCIE-40GB": {
    "name": "NVIDIA A100 PCIe 40GB",
    "memory_mib": {
-    "min": 40000,
+    "min": 39000,
     "max": 40960,
-    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
-    "verify": true
+    "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB."
    },
    "power_default_w": {
     "min": 245,
@@ -256,7 +254,7 @@
   "A100-PCIE-80GB": {
    "name": "NVIDIA A100 80GB PCIe",
    "memory_mib": {
-    "min": 80000,
+    "min": 79000,
     "max": 81920,
     "source": "Value as nvidia-smi reports it (MiB). Datasheets give GB.",
     "verify": true

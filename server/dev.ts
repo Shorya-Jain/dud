@@ -4,6 +4,7 @@
 //
 //   node server/dev.ts            (port 8787)
 //   node server/dev.ts 9000       (another port)
+//   node server/dev.ts --real     (production challenge and checks: for a real GPU, no mock results)
 //
 // Then in another terminal:
 //   export DUD_API_URL=http://localhost:8787 DUD_TOKEN=<token that this program prints>
@@ -13,8 +14,10 @@ import { createServer } from "node:http";
 import { createApp } from "./src/app.ts";
 import { fakeGithub, makeEnv } from "./test/fakes.ts";
 
-const port = Number(process.argv[2] ?? 8787);
-const env = makeEnv({
+const args = process.argv.slice(2);
+const real = args.includes("--real");
+const port = Number(args.find((a) => a !== "--real") ?? 8787);
+const env = makeEnv(real ? { ALLOW_MOCK: "false", REQUIRE_LOAD: "true", CHALLENGE_OVERRIDE: undefined } : {
   ALLOW_MOCK: "true",
   REQUIRE_LOAD: "false",
   CHALLENGE_OVERRIDE: JSON.stringify({ params: { m: 8, n: 8, k: 32, pool: 2, batch: 4 }, count: 16, min_ms: 0, max_ms: 600000, samples_per_gpu: 2 }),
@@ -50,7 +53,7 @@ const server = createServer(async (req, res) => {
 
 server.listen(port, async () => {
   const token = await devToken("dev", 1);
-  console.log(`dud dev registry: http://localhost:${port}`);
+  console.log(`dud dev registry: http://localhost:${port}${real ? " (real mode: production challenge and checks)" : ""}`);
   console.log(`Token for the account "dev": ${token}`);
   console.log(`Admin token: ${env.ADMIN_TOKEN}`);
   console.log("The database is in memory. It is empty after each start.");

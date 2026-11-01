@@ -10,7 +10,8 @@ It has the quick test, the full test with DCGM, performance tests and a load tes
 ## Status
 
 - All tests pass in mock mode and against the local dev registry.
-- The first test on a real GPU (an A100 SXM4 40GB) is in progress. The real results will set the limits in `grading.yaml` and in the challenge.
+- dud did a full test on a real GPU: an A100 SXM4 40GB on Vast.ai, with DCGM. The verdict was KEEP. That run is now the fixture `a100_sxm4_40gb_real`.
+- The registry challenge has not run on a real GPU yet. Its time limits are not final.
 - The registry is not on Cloudflare yet. Until it is, use `--no-submit` with `dud full`, and `--offline` with `dud quick`.
 - dud is not on PyPI yet. Build the wheel from this repository (see "Run a test").
 
@@ -18,6 +19,16 @@ It has the quick test, the full test with DCGM, performance tests and a load tes
 `dud quick` takes approximately 1 minute.
 If another renter did a full test of the GPU recently and the verdict was KEEP, start your work.
 If the registry has a KILL verdict for the GPU, dud tells you.
+
+## Website
+
+The website is one page in `site/index.html`. It has no build step.
+It explains the value of dud: skip the GPU test when someone already did it.
+It shows the KEEP and KILL outcomes, the steps, an example card record, and a tool that calculates a card ID in the browser.
+
+- To see it on your computer, open `site/index.html` in a browser.
+- To put it on Cloudflare Pages, do `docs/DEPLOY.md`, step 11.
+- The website is not online yet. Make the repository public before you put it online, because the links on the page go to GitHub.
 
 ## Commands
 
@@ -76,7 +87,6 @@ The registry calculates its own verdict with the same rules. It does not use the
 `THREATS.md` tells how the registry stops fraud, and what it cannot stop.
 `docs/DEPLOY.md` tells how to put the registry on Cloudflare.
 `docs/API.md` lists the registry requests.
-The website is in `site/`. `docs/DEPLOY.md`, step 11, tells how to put it on Cloudflare Pages.
 
 ## What leaves the node
 

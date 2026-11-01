@@ -4,7 +4,7 @@
  "run": {
   "run_id": "00000000-0000-4000-8000-000000000001",
   "mode": "full",
-  "dud_version": "0.1.0",
+  "dud_version": "0.2.0",
   "mock": false,
   "fixture": null,
   "started_at": "2026-10-31T11:59:30.000Z",
@@ -8357,10 +8357,10 @@
    "duration_ms": 0,
    "redactions": [],
    "stderr": null,
-   "sha256": "2d78c1f999065b182cedb04becbf9c9c1793eb6fb5b2ad88f4fb60a5b977b90f",
+   "sha256": "697044361ee55bb818fa347c9cdc930048d18bbea3c22679f21ee536e112d167",
    "bytes": 272,
    "encoding": "gzip+base64",
-   "content": "H4sIAAAAAAACE4WPOw6DMBBEe5/C2hoif2ISfI5UNAiCCSgGLH8qxN1jW0kZUaw0b/SK2R1hGOd1dpMa2s6DxMAIq0pKSk4fpJacyau48JtooIjuywQXpR1hDOQbMPQjrX6AYdme70jeBpWKo8jOaO5nytQv/xWUL5mgt25olbWbzVtyt8xr8CoxFYkNMzGvQetEznfWn3zIG0DHByGP5rMQAQAA"
+   "content": "H4sIAAAAAAACE4WPOw6DMBBEe5/C2hoibISDOEcqGgTBDlbwR/5UiLvHtpIyolhp3ugVswfCIKSWfuPrNAcYMNCGspqQuiEPch/afujaG2PtCFVyXzb6JB0IY2i+AcMiCPsBBmWe70TBRZ6LsyqOsP2Vsi3qv4LKZRN2M68Td864sqV0SuoYeGbSZbbUpqzjvmfyYXbh4kM6Ajo/MMSuwhABAAA="
   }
  ]
 }

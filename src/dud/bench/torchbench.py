@@ -12,6 +12,7 @@ import time
 from . import NotSupported
 
 N = 8192  # Matrix size for BF16 and FP8 tests.
+BATCH = 2  # Load test: matrix multiplies between two counts. 16 gave steps of 8 % on an A100.
 
 
 class NvmlSampler:
@@ -140,11 +141,12 @@ class TorchBench:
                     a = torch.randn(N, N, device=dev, dtype=torch.bfloat16)
                     b = torch.randn(N, N, device=dev, dtype=torch.bfloat16)
                     c = torch.empty_like(a)
+                    # A small batch between counts keeps the TFLOPS value in each 1 s sample precise.
                     while not stop.is_set():
-                        for _ in range(16):
+                        for _ in range(BATCH):
                             torch.matmul(a, b, out=c)
                         torch.cuda.synchronize(dev)
-                        counts[i] += 16
+                        counts[i] += BATCH
             except Exception as e:
                 errors[i] = f"{type(e).__name__}: {e}"
 

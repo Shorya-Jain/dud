@@ -12,6 +12,11 @@ Fixtures from real GPUs go in new folders, with `"synthetic": false` in `fixture
 | `h100_sxm_pending_remap` | 1x H100 SXM, pending row remap, uncorrectable ECC errors, XID 94 and 63 |
 | `a100_80gb_pcie` | 1x A100 80GB PCIe, driver 525 (old XML format), Docker, kernel log blocked |
 | `container_ecc_hidden` | 2x H100 PCIe in Kubernetes in a VM, ECC and row remap values blocked, not root |
+| `a100_sxm4_40gb_real` | **Real node.** 1x A100 SXM4 40GB on Vast.ai, driver 615, DCGM 4.7, Docker, power limit 300 W of 400 W |
+
+To make a fixture from a real full test, run:
+`.venv/bin/python scripts/fixture_from_result.py <result.json> <fixture name> "<description>"`
+The raw output in a result file is already redacted.
 
 ## Tampered fixtures
 

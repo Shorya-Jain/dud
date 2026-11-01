@@ -240,6 +240,7 @@ FINDINGS = {
     "smi_nvml_mismatch": "nvidia-smi and NVML show different values for '{label}'.",
     "duplicate_card_id": "Two GPUs have the same card ID.",
     "no_gpus": "dud found no GPUs.",
+    "power_limit_below_default": "The provider set the power limit below the default. The GPU is slower at a lower power limit.",
     "counter_lower_than_registry": "'{label}' is lower now than in an earlier registry reading. A reset or a wrong reading can cause this.",
 }
 FINDING_UNKNOWN = "dud recorded the finding '{code}'."

@@ -1,0 +1,53 @@
+== python
+Python 3.12.15
+== pip
+pip 26.2.2 from /venv/main/lib/python3.12/site-packages/pip (python 3.12)
+== torch
+2.14.1+cu132 cuda 13.2 available True gpus 1
+== dcgmi
+/usr/bin/dcgmi
+
+dcgmi  version: 4.7.1
+
+== nv-hostengine
+/usr/bin/nv-hostengine
+== package tools
+/usr/bin/apt-get
+/opt/miniforge3/condabin/conda
+== os
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+== driver
+NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  615.71.09  Release Build  (dvs-builder@U22-I3-F05-2-4)  Fri Sep  4 22:33:33 UTC 2026
+GCC version:  gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04.3) 
+== nvcc
+/usr/local/cuda/bin/nvcc
+Cuda compilation tools, release 13.2, V13.2.86
+Build cuda_13.2.r13.2/compiler.37953736_0
+== nvlink
+GPU 0: NVIDIA A100-SXM4-40GB (UUID: GPU-<removed>)
+	 Link 0: 25 GB/s
+	 Link 1: 25 GB/s
+	 Link 2: 25 GB/s
+	 Link 3: 25 GB/s
+	 Link 4: 25 GB/s
+	 Link 5: 25 GB/s
+	 Link 6: 25 GB/s
+	 Link 7: 25 GB/s
+	 Link 8: 25 GB/s
+	 Link 9: 25 GB/s
+	 Link 10: 25 GB/s
+	 Link 11: 25 GB/s
+== smi version
+NVIDIA-SMI version  : 615.71.09
+NVML version        : 615.71
+DRIVER version      : Deprecated, see "KMD version" instead
+CUDA version        : Deprecated, see "CUDA UMD version" instead
+KMD version         : 615.71.09
+CUDA UMD version    : 13.4
+== disk
+overlay          16G  1.6G   15G  10% /
+== memory
+               total        used        free      shared  buff/cache   available
+Mem:              92           9          57           0          27          83
+== whoami
+0

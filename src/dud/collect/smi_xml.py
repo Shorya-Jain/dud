@@ -60,11 +60,14 @@ def classify(raw: str | None):
 
 
 def _first(el, *paths: str) -> str:
-    if el is not None:
-        for p in paths:
-            if el.find(p) is not None:
-                return p
-    return paths[0]
+    """The first path with a usable value, else the first path that exists, else the first path."""
+    if el is None:
+        return paths[0]
+    present = [p for p in paths if el.find(p) is not None]
+    for p in present:
+        if not classify(_raw(el, p)):
+            return p
+    return present[0] if present else paths[0]
 
 
 def f_str(el, path: str) -> dict:
@@ -96,6 +99,20 @@ def f_bool(el, path: str) -> dict:
     if low in _FALSE:
         return ok(False, SRC, REF)
     return missing("error", SRC, "parse_failed", raw, REF)
+
+
+# gpu_recovery_action values that need a GPU reset or a reboot. "Drain P2P" does not.
+_RECOVERY_RESET = ("gpu reset", "reset", "node reboot", "reboot", "drain and reset")
+
+
+def _reset_required(g) -> dict:
+    if g.find("gpu_reset_status/reset_required") is not None or g.find("gpu_recovery_action") is None:
+        return f_bool(g, "gpu_reset_status/reset_required")
+    raw = _raw(g, "gpu_recovery_action")
+    bad = classify(raw)
+    if bad:
+        return missing(bad[0], SRC, bad[1], raw, REF)
+    return ok(raw.strip().lower() in _RECOVERY_RESET, SRC, REF)
 
 
 def _leaf(raw: str):
@@ -258,7 +275,7 @@ def _gpu(g) -> dict:
         "power_draw_w": f_num(power, _first(power, "power_draw", "average_power_draw", "instant_power_draw"),
                               "W", True),
         "performance_state": f_str(g, "performance_state"),
-        "reset_required": f_bool(g, "gpu_reset_status/reset_required"),
+        "reset_required": _reset_required(g),
         "pcie_replay_count": f_num(g, "pci/replay_counter"),
         "throttle_reasons_active": _throttle(g),
     }
@@ -281,8 +298,8 @@ def parse(xml_text: str) -> dict:
     if root.tag != "nvidia_smi_log":
         raise SmiParseError(f"root element is {root.tag}, not nvidia_smi_log")
     top = {
-        "driver_version": f_str(root, "driver_version"),
-        "cuda_version": f_str(root, "cuda_version"),
+        "driver_version": f_str(root, _first(root, "driver_version", "kmd_version")),
+        "cuda_version": f_str(root, _first(root, "cuda_version", "cuda_umd_version")),
         "timestamp": f_str(root, "timestamp"),
         "attached_gpus": f_num(root, "attached_gpus"),
     }

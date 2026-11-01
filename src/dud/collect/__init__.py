@@ -121,6 +121,7 @@ def _build_gpu(index: int, g: dict, nv: dict, klog) -> dict:
     _merge_nvml(gpu, nv["devices"].get(g["bus_id"]), nv)
     gpu["history"]["xid_events"] = kernel_log.events_field(klog, g["bus_id"])
     _apply_model_expectations(gpu, m)
+    _check_power_limit(gpu)
     return gpu
 
 
@@ -164,6 +165,15 @@ def _apply_model_expectations(gpu: dict, m) -> None:
         for _, f in iter_fields(hist["retired_pages"]):
             if f["status"] != "ok" and f["reason"] in _HIDDEN_REASONS:
                 f.update(status="not_supported", reason="replaced_by_row_remap")
+
+
+def _check_power_limit(gpu: dict) -> None:
+    """A power limit below the default makes the GPU slower. Providers can set it."""
+    cur, default = gpu["identity"]["power_limit_current_w"], gpu["identity"]["power_limit_default_w"]
+    if cur["status"] == "ok" and default["status"] == "ok" and cur["value"] < 0.95 * default["value"]:
+        gpu["findings"].append({"code": "power_limit_below_default", "severity": "warn",
+                                "path": "identity.power_limit_current_w",
+                                "detail": f"{cur['value']:g} W of {default['value']:g} W"})
 
 
 def _check_duplicates(gpus: list, findings: list) -> None:

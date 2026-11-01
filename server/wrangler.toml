@@ -14,7 +14,7 @@ enabled = true
 [[d1_databases]]
 binding = "DB"
 database_name = "dud-registry"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"   # docs/DEPLOY.md, step 4
+database_id = "972187d0-55a6-4b50-bb44-f76c018f8bcf"
 migrations_dir = "migrations"
 
 [[r2_buckets]]

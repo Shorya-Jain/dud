@@ -8,7 +8,7 @@ from dud.probe import MockProbe
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
-FIXTURE_NAMES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden"]
+FIXTURE_NAMES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]
 SCHEMA = json.loads((ROOT / "src" / "dud" / "schema" / "result.v1.json").read_text())
 
 
@@ -27,7 +27,8 @@ def raw_ids(name: str) -> list:
     xml = (FIXTURES / name / "nvidia-smi-q-x.xml").read_text()
     found = re.findall(r"<(?:uuid|serial)>([^<]+)</", xml)
     found += re.findall(r"<process_name>([^<]+)</", xml)
-    return [f for f in found if f != "N/A"]
+    # A fixture from a real node has redaction markers in place of the raw values.
+    return [f for f in found if f != "N/A" and not f.startswith("dud-redacted:")]
 
 
 @pytest.fixture(params=FIXTURE_NAMES)

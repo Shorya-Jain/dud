@@ -27,7 +27,7 @@ from dud.probe import MockProbe  # noqa: E402
 FIX = ROOT / "fixtures"
 SERVER_FIX = ROOT / "server" / "test" / "fixtures"
 TAMPERED = FIX / "tampered"
-FULL_FIXTURES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden"]
+FULL_FIXTURES = ["h100_sxm_healthy", "h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]
 
 
 def vectors() -> dict:

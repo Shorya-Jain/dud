@@ -2,9 +2,9 @@
  "schema_version": 1,
  "kind": "dud.result",
  "run": {
-  "run_id": "b0ef68d8-d815-408f-aff5-1e2d5783f024",
+  "run_id": "9fe23237-fcf5-4e98-96b3-cf67d0fe97cc",
   "mode": "full",
-  "dud_version": "0.1.0",
+  "dud_version": "0.2.0",
   "mock": false,
   "fixture": null,
   "started_at": "2026-10-31T11:59:30.000Z",
@@ -64950,10 +64950,10 @@
    "duration_ms": 0,
    "redactions": [],
    "stderr": null,
-   "sha256": "cc84d4a6d9284de5d049e946f3434f9fdaaa654aeeea230651602297a90186f1",
+   "sha256": "d41a1c350565613979c44dceb39c63500be1afd0e333cc590c8fc079cc3d28f2",
    "bytes": 5713,
    "encoding": "gzip+base64",
-   "content": "H4sIAAAAAAACE8WYz26jMBDG7zwF8jlF/m+T5+ipVRWRhLRRmwYBOVV99wIlWi1Dd0f5Vsstdka/sT2fZwZ/JKk4HN+PzUu53xStWKdCS+3vlLwz6l7ma6PX1mXGqgex6myfq0vTGX0kaSrk+CMV24Py10EqTufdazdq60vZT3yuBptDFf9m8rI9/WySjGZCLeNWL+PWLOPWLuPWLePWL+M2/He3yWAp3s7FflPW9bkeLvMwdzq+X9qyHyvXjytdXS96VRwHw8eeM9L3TZ8s1Op79LytegMTdHadqsqy3hS7Xdk04yrGP5p6103IX8v+jagp0WBEMyF6hxLtlOgziREdXSN4jn5KzDOHEQONTMCIckrMubtWTPVEiRINJRqMOFVP8CiRqMdkOUYk6gmZx4hT9USNEiU9R+au9Q/EaTbz7GymmerpFB4wIlGPzSJGnKonyMxiRE+J4K4DjYzHiJISmfnRMNXTRSbHiPrmTGGY6onwrol6Ikr0N3cAhl+5LEYk6olchVtu7mH3FJZfC0Ei6aQsNzKWq56ce2csUz1RcfOj5arHoWsklStw9eiY6uli7TCipvkRXKOh2UxhxJlaKDHiTN8TMOJM5YoYUd5cCz23chnuOXquelymMaKhlStgxJmvOHCNjtYZkEi6ZjgyM10z8xwDVz0OJZK+R6HEmcqlMOLtX3Hhn78BBG4t1Fz1hOuL0dP4YtS0Rd3++YlYhweRfH4BqZVOr1EWAAA="
+   "content": "H4sIAAAAAAACE8WYz26jMBDG7zwF8jlF/m+T5+ipVRWRhLRRmwYBOVV99wIlWi1Dd0f5Vsstdka/sT2fZwZ/JKk4HN+PzUu53xStWKdCS+3vlLqT6l6FtYlrZzJv5INYdbbP1aXpjD6SNBVy/JGK7UH56yAVp/PutRu19aXsJz5Xg82hin8zedmefjZJRjOhlnGrl3FrlnFrl3HrlnHrl3Eb/rvbZLAUb+divynr+lwPl3mYOx3fL23Zj5Xrx5Wurhe9Ko6D4WPPGen7pk8WavU9et5WvYEJOrtOVWVZb4rdrmyacRXjH0296ybkr2X/RtSUaDCimRC9Q4l2SvSZxIiOrhE8Rz8l5pnDiIFGJmBEOSXm3F0rpnqiRImGEg1GnKoneJRI1GOyHCMS9YTMY8SpeqJGiZKeI3PX+gfiNJt5djbTTPV0Cg8YkajHZhEjTtUTZGYxoqdEcNeBRsZjREmJzPxomOrpIpNjRH1zpjBM9UR410Q9ESX6mzsAw69cFiMS9USuwi0397B7CsuvhSCRdFKWGxnLVU/OvTOWqZ6ouPnRctXj0DWSyhW4enRM9XSxdhhR0/wIrtHQbKYw4kwtlBhxpu8JGHGmckWMKG+uhZ5buQz3HD1XPS7TGNHQyhUw4sxXHLhGR+sMSCRdMxyZma6ZeY6Bqx6HEknfo1DiTOVSGPH2r7jwz98AArcWaq56wvXF6Gl8MWraom7//ESs3INIPr8A0LyVqlEWAAA="
   }
  ]
 }

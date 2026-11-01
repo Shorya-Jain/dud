@@ -74,7 +74,7 @@ test("an honest full test is accepted and gives 30 days of access", async () => 
 });
 
 test("every fixture node passes", async () => {
-  for (const name of ["h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden"]) {
+  for (const name of ["h100_sxm_pending_remap", "a100_80gb_pcie", "container_ecc_hidden", "a100_sxm4_40gb_real"]) {
     const h = new Harness();
     const t = await h.login();
     const { submit } = await fullFlow(h, t, serverFixture(name));
