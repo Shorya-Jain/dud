@@ -2,15 +2,16 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
-from . import __version__, grade, history, model, report
+from . import __version__, grade, history, model, report, translog
 from . import text as T
 from .collect import UnknownGpu, collect
 from .model import DudError
 from .probe import get_probe
-from .registry import Client, api_url, delete_credentials, github_device_flow, load_credentials, save_credentials
+from .registry import Client, api_url, delete_credentials, dud_home, github_device_flow, load_credentials, save_credentials
 
 
 def parse_gpus(value: str | None) -> list | None:
@@ -114,6 +115,44 @@ def cmd_status(args) -> int:
     return 0
 
 
+def cmd_log(args) -> int:
+    """Check the transparency log. Without access, check only the published heads against the saved copy."""
+    client = Client()
+    heads = client.log_heads()["heads"]
+    home = dud_home()
+    saved = translog.load_witness(home)
+    print(T.LOG_START)
+    print(T.LOG_HEADS.format(count=len(heads), first=heads[0]["day"] if heads else T.NONE, last=heads[-1]["day"] if heads else T.NONE))
+    problems = [T.LOG_HEAD_CHANGED.format(day=d) for d in translog.compare_witness(saved, heads)]
+    me = Client().me() if load_credentials() else None
+    if me and me["account"]["has_access"]:
+        entries, after, page = [], 0, {"last_seq": 0}
+        while True:
+            page = client.log_page(after)
+            entries += page["entries"]
+            if not page["entries"] or entries[-1]["seq"] >= page["last_seq"]:
+                break
+            after = entries[-1]["seq"]
+        found, chains = translog.verify(entries, page["heads"])
+        problems += [T.LOG_PROBLEM.format(detail=p) for p in found]
+        by_day = {h["day"]: h["chain"] for h in page["heads"]}
+        problems += [T.LOG_HEAD_NOT_PUBLISHED.format(day=h["day"]) for h in heads if by_day.get(h["day"]) != h["chain"]]
+        logged = {json.loads(e["entry"]).get("fp") for e in entries}
+        mine = translog.receipts(Path(args.results_dir))
+        print(T.LOG_ENTRIES.format(entries=len(entries)))
+        if mine:
+            print(T.LOG_RECEIPTS.format(found=sum(fp in logged for fp in mine), total=len(mine)))
+            if any(fp not in logged for fp in mine):
+                print(T.LOG_RECEIPT_WAIT)
+    else:
+        print(T.LOG_NO_ACCESS)
+    print(T.LOG_SAVED.format(path=translog.save_witness(home, saved, heads)))
+    for p in problems:
+        print(p)
+    print(T.LOG_OK if not problems else T.LOG_BAD)
+    return 0 if not problems else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="dud", description=T.HELP["description"])
     p.add_argument("--version", action="version", version=f"dud {__version__}")
@@ -140,6 +179,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("login", help=T.HELP["login"]).set_defaults(func=cmd_login)
     sub.add_parser("logout", help=T.HELP["logout"]).set_defaults(func=cmd_logout)
     sub.add_parser("status", help=T.HELP["status"]).set_defaults(func=cmd_status)
+    log = sub.add_parser("log", help=T.HELP["log"])
+    log.add_argument("--results-dir", default="dud-results", help=T.HELP["results_dir"])
+    log.set_defaults(func=cmd_log)
 
     rep = sub.add_parser("report", help=T.HELP["report"])
     rep.add_argument("file", help=T.HELP["report_file"])

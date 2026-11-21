@@ -47,6 +47,7 @@ const DEFAULTS = {
   REQUIRE_LOAD: true,
   ACCESS_REQUIRES_ALL_GPUS: true,
   ALLOW_MOCK: false,
+  LOG_PAGES_PER_DAY: 200,
 };
 
 export type Config = typeof DEFAULTS & { CHALLENGE_OVERRIDE: Record<string, any> | null };

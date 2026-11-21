@@ -3,6 +3,7 @@
 
 import { authenticate, bump, publicAccount, requireAccess, usage, type Ctx } from "./auth.ts";
 import { ApiError, json } from "./http.ts";
+import { lookupLog, publicReading } from "./log.ts";
 import specs from "./specs.json" with { type: "json" };
 import { cardKey } from "./submit.ts";
 import { capWeights, LOW_TRUST, weightedPercentile } from "./trust.ts";
@@ -35,25 +36,11 @@ export async function lookupCard(ctx: Ctx, clientCardId: string): Promise<Respon
     card_id: clientCardId,
     contributors: new Set(rows.map((r) => r.account_id)).size,
     readings: rows.map((r) => ({
-      date: String(r.observed_at).slice(0, 10),
-      model_key: r.model_key,
-      provider: r.provider,
-      driver_version: r.driver_version,
-      vbios: r.vbios,
-      memory_total_mib: r.memory_total_mib,
-      ecc: { volatile_correctable: r.ecc_vol_corr, volatile_uncorrectable: r.ecc_vol_unc,
-             aggregate_correctable: r.ecc_agg_corr, aggregate_uncorrectable: r.ecc_agg_unc },
-      row_remap: { correctable: r.remap_corr, uncorrectable: r.remap_unc, pending: r.remap_pending === null ? null : !!r.remap_pending,
-                   failed: r.remap_failed === null ? null : !!r.remap_failed,
-                   bank_availability: { max: r.bank_max, high: r.bank_high, partial: r.bank_partial, low: r.bank_low, none: r.bank_none } },
-      retired_pages: { correctable: r.retired_corr, uncorrectable: r.retired_unc },
-      xid_count: r.xid_count,
-      blocked_values: r.blocked_count,
-      verdict: r.verdict,
-      verdict_reasons: r.verdict_json ? JSON.parse(r.verdict_json).map((x: any) => x.text) : [],
-      perf: r.perf_json ? JSON.parse(r.perf_json) : null,
+      ...publicReading(r),
       trust: r.contributor_trust < LOW_TRUST ? "low" : "normal",
       yours: r.account_id === a.id,
+      // The client checks: SHA-256 of canonical = fp, canonical = this reading, and fp is in the log at seq.
+      log: lookupLog(r),
     })),
     lookups_left_today: left,
   });

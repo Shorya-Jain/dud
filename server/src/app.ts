@@ -5,6 +5,7 @@ import { githubVerifier, login, type Ctx, type GithubVerifier } from "./auth.ts"
 import { commitChallenge, createChallenge, revealChallenge } from "./challenge.ts";
 import { config, realClock, type Clock, type Env } from "./env.ts";
 import { ApiError, errorResponse, json, message } from "./http.ts";
+import { logPage, publicHeads, runLog } from "./log.ts";
 import { lookupCard, me, stats } from "./lookup.ts";
 import { submit } from "./submit.ts";
 
@@ -42,11 +43,18 @@ export function createApp(options: AppOptions = {}) {
     if (a === "submissions" && !b && m === "POST") return submit(ctx);
     if (a === "cards" && b && !c && m === "GET") return lookupCard(ctx, b);
     if (a === "stats" && b && !c && m === "GET") return stats(ctx, b, url.searchParams.get("provider"));
+    if (a === "log" && b === "heads" && !c && m === "GET") return publicHeads(ctx);
+    if (a === "log" && !b && m === "GET") return logPage(ctx, url.searchParams);
     if (a === "admin") return admin(ctx, parts.slice(2));
     throw new ApiError(404, "not_found");
   }
 
   return {
+    // Cron trigger (wrangler.toml): chain the waiting log entries, and record the head of the day.
+    async scheduled(_event: unknown, env: Env): Promise<void> {
+      const request = new Request("https://cron.invalid/");
+      await runLog({ env, cfg: config(env), now, request, ip: "cron", network: "cron", verifyGithub });
+    },
     async fetch(request: Request, env: Env): Promise<Response> {
       const ctx: Ctx = {
         env,

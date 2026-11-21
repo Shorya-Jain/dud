@@ -5,6 +5,7 @@ import { revokeTokens, type Ctx } from "./auth.ts";
 import { gunzip, timingSafeEqual } from "./crypto.ts";
 import { iso } from "./env.ts";
 import { ApiError, json, readJson } from "./http.ts";
+import { accountEntry, pendingStmt, readingEntry, runLog } from "./log.ts";
 import { grantAccess } from "./submit.ts";
 
 function requireAdmin(ctx: Ctx) {
@@ -77,6 +78,10 @@ export async function admin(ctx: Ctx, parts: string[]): Promise<Response> {
     const stmts = [
       db.prepare("UPDATE submissions SET status = ?, reviewed_at = ?, review_note = ? WHERE id = ?").bind(newStatus, iso(ctx.now()), note, id),
       db.prepare("UPDATE readings SET status = ? WHERE submission_id = ?").bind(newStatus, id),
+      ...(decision === "accept"
+        ? (await db.prepare("SELECT card_id, log_fp FROM readings WHERE submission_id = ? AND log_fp IS NOT NULL").bind(id).all<{ card_id: string; log_fp: string }>())
+            .results.map((r) => pendingStmt(ctx, readingEntry(r.log_fp), id, r.card_id))
+        : []),
       db.prepare("UPDATE admin_flags SET resolved_at = ?, resolution = ? WHERE submission_id = ? AND resolved_at IS NULL")
         .bind(iso(ctx.now()), `${decision}: ${note}`, id),
     ];
@@ -109,9 +114,16 @@ export async function admin(ctx: Ctx, parts: string[]): Promise<Response> {
     const a = await accountByIdOrLogin(ctx, id);
     const body = await readJson(ctx.request, 10_000);
     const on = body.on !== false;
-    await db.prepare("UPDATE accounts SET status = ? WHERE id = ?").bind(on ? "quarantined" : "active", a.id).run();
+    await db.batch([
+      db.prepare("UPDATE accounts SET status = ? WHERE id = ?").bind(on ? "quarantined" : "active", a.id),
+      pendingStmt(ctx, await accountEntry(a.id, on ? "quarantined" : "active")),
+    ]);
     await audit(ctx, on ? "quarantine" : "unquarantine", a.id, String(body.note ?? ""));
     return json({ ok: true, status: on ? "quarantined" : "active" });
+  }
+  if (section === "log" && id === "run" && method === "POST") {
+    await runLog(ctx);
+    return json({ ok: true });
   }
   if (section === "accounts" && id && action === "revoke" && method === "POST") {
     const a = await accountByIdOrLogin(ctx, id);

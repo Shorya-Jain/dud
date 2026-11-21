@@ -7,6 +7,7 @@ import { b64decode, gunzip, gzip, hmacHex, randomHex, sha256Hex } from "./crypto
 import { iso } from "./env.ts";
 import { ApiError, json, readJson } from "./http.ts";
 import { gradeGpu } from "./grade.ts";
+import { canonical, fingerprint, pendingStmt, publicReading, readingEntry } from "./log.ts";
 import { checkLoad } from "./load.ts";
 import { identify } from "./models.ts";
 import { validate } from "./schema.ts";
@@ -385,6 +386,7 @@ export async function submit(ctx: Ctx): Promise<Response> {
   if (challenge && challenge.row.status === "verified")
     stmts.push(db.prepare("UPDATE challenges SET status = 'used', used_by = ? WHERE id = ?").bind(id, challenge.row.id));
 
+  const receipts: { gpu_index: number; fp: string }[] = [];
   if (status !== "rejected") {
     for (const e of doc.raw) if (REPLAY_IDS.test(e.id) && e.bytes > 0)
       stmts.push(db.prepare("INSERT OR IGNORE INTO raw_hashes (sha256, submission_id, raw_id) VALUES (?, ?, ?)").bind(e.sha256, id, e.id));
@@ -392,6 +394,10 @@ export async function submit(ctx: Ctx): Promise<Response> {
       const g = doc.gpus[i];
       const r = readingFrom(doc, g);
       const serial = val(g, "card.serial_sha256");
+      // The same shape that a lookup shows. Fingerprint it now, before anyone can change the row.
+      const logText = canonical(publicReading({ ...r, observed_at: doc.run.started_at, provider: doc.run.provider.reported }));
+      const fp = await fingerprint(val(g, "card.uuid_sha256"), logText);
+      receipts.push({ gpu_index: g.index, fp });
       stmts.push(db.prepare(
         "INSERT INTO cards (card_id, serial_key, model_key, first_seen, last_seen) VALUES (?, ?, ?, ?, ?) " +
           "ON CONFLICT (card_id) DO UPDATE SET last_seen = excluded.last_seen, serial_key = COALESCE(cards.serial_key, excluded.serial_key)",
@@ -399,12 +405,13 @@ export async function submit(ctx: Ctx): Promise<Response> {
       stmts.push(db.prepare(
         "INSERT INTO readings (submission_id, card_id, account_id, status, observed_at, model_key, provider, driver_version, vbios, " +
           "memory_total_mib, ecc_vol_corr, ecc_vol_unc, ecc_agg_corr, ecc_agg_unc, remap_corr, remap_unc, remap_pending, remap_failed, " +
-          "bank_max, bank_high, bank_partial, bank_low, bank_none, retired_corr, retired_unc, xid_count, blocked_count, verdict, verdict_json, perf_json, gpu_json) " +
-          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "bank_max, bank_high, bank_partial, bank_low, bank_none, retired_corr, retired_unc, xid_count, blocked_count, verdict, verdict_json, perf_json, gpu_json, " +
+          "log_fp, log_canonical) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       ).bind(id, keys[i], account.id, status, doc.run.started_at, r.model_key, doc.run.provider.reported, r.driver_version, r.vbios,
         r.memory_total_mib, r.ecc_vol_corr, r.ecc_vol_unc, r.ecc_agg_corr, r.ecc_agg_unc, r.remap_corr, r.remap_unc, r.remap_pending,
         r.remap_failed, r.bank_max, r.bank_high, r.bank_partial, r.bank_low, r.bank_none, r.retired_corr, r.retired_unc, r.xid_count,
-        r.blocked_count, r.verdict, r.verdict_json, r.perf_json, JSON.stringify(g)));
+        r.blocked_count, r.verdict, r.verdict_json, r.perf_json, JSON.stringify(g), fp, logText));
+      if (status === "accepted") stmts.push(pendingStmt(ctx, readingEntry(fp), id, keys[i]));
     }
   }
   if (grants) stmts.push(...grantAccess(ctx, account.id, id, keys));
@@ -419,6 +426,8 @@ export async function submit(ctx: Ctx): Promise<Response> {
     grants_access: grants,
     access_until: updated?.access_until ?? null,
     reason,
+    // Keep these. dud log checks that each one is in the transparency log.
+    receipts,
     checks: c.list.filter((x) => x.result !== "pass" || x.name === "access"),
   }, status === "rejected" ? 422 : 200);
 }

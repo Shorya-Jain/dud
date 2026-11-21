@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from . import model
 from . import text as T
+from . import translog
 from .registry import Client, RegistryError, api_url, load_credentials
 
 # Aggregate counters only go up. A lower value now than in the registry is a finding.
@@ -36,12 +37,19 @@ def fetch(doc: dict, client: Client | None = None) -> dict:
 
 
 def compare(doc: dict) -> None:
-    """Add a finding where a counter is lower now than in an earlier registry reading."""
+    """Add a finding where a counter is lower now than in an earlier registry reading,
+    or where a registry reading does not match its transparency log fingerprint."""
     reg = doc.get("registry") or {}
     for gpu in doc["gpus"]:
-        data = reg.get("cards", {}).get(gpu["card"]["uuid_sha256"]["value"] or "")
+        card = gpu["card"]["uuid_sha256"]["value"] or ""
+        data = reg.get("cards", {}).get(card)
         if not data:
             continue
+        for r in data["readings"]:
+            problem = translog.check_reading(card, r) if "log" in r else None
+            if problem:
+                gpu["findings"].append({"code": "registry_log_mismatch", "severity": "warn", "path": None,
+                                        "detail": f"{r.get('date')}: {problem}"})
         for path, key, group in COUNTERS:
             now = model.get_path(gpu, path)
             earlier = [r[group][key] for r in data["readings"] if r[group][key] is not None]

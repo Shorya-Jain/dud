@@ -1,0 +1,38 @@
+# Keep a public copy of the transparency log heads in git, one commit each day.
+# Git history then shows if the registry ever changes a published head.
+name: Transparency log witness
+
+on:
+  schedule:
+    - cron: "40 1 * * *"   # 01:40 UTC, after the first registry cron run of the day.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  save-heads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the published heads
+        run: |
+          curl -sf https://dud-registry.shoryajain99.workers.dev/v1/log/heads | python3 -m json.tool --sort-keys > log/heads.json
+      - name: Stop if a saved head changed
+        run: |
+          git show HEAD:log/heads.json > /tmp/old.json 2>/dev/null || echo '{"heads": []}' > /tmp/old.json
+          python3 - <<'PY'
+          import json, sys
+          old = {h["day"]: h["chain"] for h in json.load(open("/tmp/old.json"))["heads"]}
+          new = {h["day"]: h["chain"] for h in json.load(open("log/heads.json"))["heads"]}
+          changed = [d for d in old if new.get(d) != old[d]]
+          if changed:
+              sys.exit(f"The registry changed or removed published heads: {changed}")
+          PY
+      - name: Commit
+        run: |
+          git config user.name "dud log witness"
+          git config user.email "actions@users.noreply.github.com"
+          git add log/heads.json
+          git diff --cached --quiet || git commit -m "Transparency log heads $(date -u +%F)"
+          git push

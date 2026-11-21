@@ -132,18 +132,21 @@ def dev_registry(home, monkeypatch, tmp_path):
         port = s.getsockname()[1]
     proc = subprocess.Popen(["node", str(ROOT / "server" / "dev.ts"), str(port)],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    lines, token = [], None
+    lines, token, admin = [], None, None
     deadline = time.time() + 20
-    while time.time() < deadline and token is None:
+    while time.time() < deadline and (token is None or admin is None):
         line = proc.stdout.readline()
         lines.append(line)
         m = re.search(r"Token for the account \"dev\": (dud_\S+)", line)
-        token = m.group(1) if m else None
-    if token is None:
+        token = m.group(1) if m else token
+        m = re.search(r"Admin token: (\S+)", line)
+        admin = m.group(1) if m else admin
+    if token is None or admin is None:
         proc.kill()
         pytest.fail("dev server did not start: " + "".join(lines))
     monkeypatch.setenv("DUD_API_URL", f"http://127.0.0.1:{port}")
     monkeypatch.setenv("DUD_TOKEN", token)
+    monkeypatch.setenv("DUD_TEST_ADMIN_TOKEN", admin)
     monkeypatch.setenv("DUD_MOCK", "1")
     monkeypatch.setenv("DUD_FIXTURES_DIR", str(FIXTURES))
     yield port
@@ -205,3 +208,30 @@ def test_no_registry_yet(monkeypatch, tmp_path):
         registry.Client()
     out = history.fetch({"gpus": []})
     assert out["status"] == "no_registry" and out["message"] == T.REGISTRY_NOT_AVAILABLE
+
+
+def test_end_to_end_transparency_log(dev_registry, tmp_path, capsys, monkeypatch):
+    import os
+    import urllib.request
+
+    monkeypatch.setenv("DUD_FIXTURE", "a100_80gb_pcie")
+    out = tmp_path / "out"
+    assert cli.main(["full", "--out-dir", str(out)]) == 0
+    capsys.readouterr()
+    # Before the hourly run: the receipt is not in the log yet.
+    assert cli.main(["log", "--results-dir", str(out)]) == 0
+    assert "Your receipts in the log: 0 of 1." in capsys.readouterr().out
+    # The admin runs the log now (in place of the hourly cron run).
+    req = urllib.request.Request(f"{os.environ['DUD_API_URL']}/v1/admin/log/run", data=b"{}", method="POST",
+                                 headers={"authorization": f"Bearer {os.environ['DUD_TEST_ADMIN_TOKEN']}"})
+    urllib.request.urlopen(req).read()
+    assert cli.main(["log", "--results-dir", str(out)]) == 0
+    text = capsys.readouterr().out
+    assert "Your receipts in the log: 1 of 1." in text and T.LOG_OK in text, text
+    assert json.loads((tmp_path / "home" / "log_heads.json").read_text())  # dud saved the published heads.
+    # The quick test checks each registry reading against its reading hash.
+    assert cli.main(["quick", "--out-dir", str(tmp_path / "q")]) == 0
+    (q,) = list((tmp_path / "q").iterdir())
+    doc = json.loads((q / "result.json").read_text())
+    assert doc["registry"]["cards"] and not [f for f in doc["gpus"][0]["findings"] if f["code"] == "registry_log_mismatch"]
+    assert doc["registry"]["cards"][doc["gpus"][0]["card"]["uuid_sha256"]["value"]]["readings"][0]["log"]["seq"] == 1

@@ -94,6 +94,19 @@ Answer (HTTP 200, or 422 if rejected):
 Answer: `{card_id, contributors, readings: [...], lookups_left_today}`. Only accepted readings from active accounts.
 Each reading has `verdict` (KEEP, KILL or UNKNOWN), calculated by the registry, and `verdict_reasons` (the text of each rule that failed or had no value).
 
+### `GET /v1/log/heads` (public)
+
+The head of each UTC day: `{"heads": [{"day": "2026-11-21", "chain": "<64 hex>"}]}`. No sequence numbers, no data.
+
+### `GET /v1/log?after=<seq>` (access)
+
+Up to 1000 log entries after `seq`, and all heads with their sequence numbers.
+`{"entries": [{"seq": 1, "added_at": "...", "entry": "<JSON text>", "leaf": "<64 hex>", "chain": "<64 hex>"}], "heads": [{"day", "seq", "chain"}], "last_seq": 1}`.
+Limit: `LOG_PAGES_PER_DAY` (200) requests each day.
+
+Each reading in `GET /v1/cards/{card_id}` has `log: {"seq", "fp", "canonical"}`. `seq` is null until the hourly run adds the entry.
+`POST /v1/submissions` gives `receipts: [{"gpu_index", "fp"}]`.
+
 ### `GET /v1/stats/{model_key}?provider=<name>`
 
 Answer: `{model_key, provider, enough_data, percentiles: {<value>: {p10, p50, p90}}, lookups_left_today}`.
@@ -107,6 +120,7 @@ Answer: `{model_key, provider, enough_data, percentiles: {<value>: {p10, p50, p9
 | `POST /v1/admin/flags/{id}/resolve` | Close a flag. Body `{note}` |
 | `GET /v1/admin/submissions?status=flagged` | List submissions |
 | `GET /v1/admin/submissions/{id}` | One submission, its checks and its account |
+| `POST /v1/admin/log/run` | Chain the waiting log entries now (the hourly cron run does this) |
 | `GET /v1/admin/submissions/{id}/document` | The full result file from R2. 404 if the registry has no R2. |
 | `POST /v1/admin/submissions/{id}/decision` | Body `{decision: "accept" or "reject", note}`. Flagged submissions only |
 | `GET /v1/admin/accounts/{id or login}` | Account, submissions, networks, tokens |

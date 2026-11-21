@@ -162,6 +162,12 @@ class Client:
     def card(self, card_id: str) -> dict:
         return self.call("GET", f"/v1/cards/{card_id}")
 
+    def log_heads(self) -> dict:
+        return self.call("GET", "/v1/log/heads", auth=False)
+
+    def log_page(self, after: int) -> dict:
+        return self.call("GET", f"/v1/log?after={after}")
+
     def stats(self, model_key: str, provider: str | None = None) -> dict:
         q = f"?provider={urllib.parse.quote(provider)}" if provider else ""
         return self.call("GET", f"/v1/stats/{model_key}{q}")

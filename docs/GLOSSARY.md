@@ -69,3 +69,8 @@ Do not use the words in the "Do not use" column.
 | admin | The owner of the registry. | moderator, operator |
 | digest | A 32-bit number that the client makes from one challenge product. | checksum |
 | Merkle root | One hash that represents all digests of one GPU in a challenge. | tree hash |
+| transparency log | The append-only list of changes to the registry data that lookups show. | audit trail, ledger, blockchain |
+| log entry | One change in the transparency log: a reading that became visible, or an account status change. | log record, log line |
+| head | The chain value of the transparency log at the start of one UTC day. The registry publishes it. | checkpoint, root hash |
+| reading hash | The SHA-256 hash of one registry reading and its card ID. A log entry contains it. | fingerprint, reading ID |
+| receipt | The reading hash that the registry sends back for each accepted GPU. | proof, ticket |

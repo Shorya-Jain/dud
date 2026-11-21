@@ -93,6 +93,18 @@ SUBMIT_FAILED = "dud could not send the result. Your result file is on this node
 
 # Registry history in the quick test
 REGISTRY_NOT_AVAILABLE = "The registry is not available yet. dud tests the GPUs, but it does not send or look up results."
+LOG_START = "dud checks the transparency log of the registry."
+LOG_HEADS = "Published heads: {count}. First day: {first}. Last day: {last}."
+LOG_ENTRIES = "Log entries: {entries}. dud calculated the chain again from all entries."
+LOG_RECEIPTS = "Your receipts in the log: {found} of {total}."
+LOG_RECEIPT_WAIT = "The registry adds new entries each hour. Run dud log again later."
+LOG_NO_ACCESS = "You do not have registry access. dud compared only the published heads with your saved copy."
+LOG_SAVED = "Saved heads: {path}"
+LOG_HEAD_CHANGED = "The published head of {day} is different from your saved copy. The registry changed its history."
+LOG_HEAD_NOT_PUBLISHED = "The published head of {day} does not match the head in the log."
+LOG_PROBLEM = "Problem in the transparency log: {detail}"
+LOG_OK = "The transparency log is correct."
+LOG_BAD = "The transparency log has problems. Do not trust the registry data until the admin explains them."
 REGISTRY_NOT_LOGGED_IN = "dud did not compare with the registry. Run dud login to compare with earlier readings."
 REGISTRY_CARD_NONE = "GPU {index}: the registry has no earlier readings of this GPU."
 REGISTRY_CARD_HISTORY = "GPU {index}: earlier readings in the registry: {count}. Accounts: {contributors}. First reading: {first}."
@@ -105,6 +117,8 @@ HELP = {
     "login": "Sign in with your GitHub account.",
     "logout": "Delete your registry token from this computer.",
     "status": "Show your registry account and access.",
+    "log": "Check the transparency log of the registry.",
+    "results_dir": "The folder with your full-test results, for your receipts.",
     "offline": "Do not compare with the registry.",
     "report": "Show the report for a saved result file.",
     "report_file": "The result file (result.json).",
@@ -242,6 +256,7 @@ FINDINGS = {
     "duplicate_card_id": "Two GPUs have the same card ID.",
     "no_gpus": "dud found no GPUs.",
     "power_limit_below_default": "The provider set the power limit below the default. The GPU is slower at a lower power limit.",
+    "registry_log_mismatch": "A registry reading of this GPU does not match its reading hash in the transparency log.",
     "counter_lower_than_registry": "'{label}' is lower now than in an earlier registry reading. A reset or a wrong reading can cause this.",
 }
 FINDING_UNKNOWN = "dud recorded the finding '{code}'."

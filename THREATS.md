@@ -172,6 +172,7 @@ The settings are in `server/wrangler.toml` and `specs.yaml`.
 | A raw UUID or serial number leaves the node | The client replaces them with hashes before it writes or sends anything. The server rejects XML that has a raw UUID. | A new nvidia-smi field with an identifier in an unexpected element. |
 | Hostile XML (very deep, very large) | A small parser with no external entities. Limits on depth (32) and element count (200 000). Body limit `MAX_SUBMISSION_MB` (40). | None known. |
 | Too much server work | Daily limits. Each reveal checks one small product (under 1 ms of CPU on a laptop). | Many IP addresses can call login. Cloudflare protection helps. |
+| The admin changes or removes accepted data | The transparency log: a chain of hashes with a public head each day, a copy of the heads in git, receipts, and a reading hash in each lookup (`dud log`, `dud quick`). | The admin can refuse new submissions, or stop the log. Users see that the log stopped, but not why. |
 | Admin token theft | The token is a Cloudflare secret. The server compares it in constant time. Every admin action goes into `audit_log`. | One token, no second factor. A future fix is Cloudflare Access in front of `/v1/admin/`. |
 | Pepper change or loss | The deploy guide tells you to keep the pepper safe and never change it. | A lost pepper breaks the link between old and new readings. |
 | A modified client that skips redaction | The server rejects XML with a raw UUID. | The registry cannot protect a user from a client that the user changed. |

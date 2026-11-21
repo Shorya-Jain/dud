@@ -40,6 +40,7 @@ It shows the KEEP and KILL outcomes, the steps, an example card record, and a to
 | `dud login` | Signs you in with GitHub. Use a browser on any computer or phone. |
 | `dud status` | Shows your account, your access and your lookups today. |
 | `dud logout` | Deletes your token from this computer. |
+| `dud log` | Checks the transparency log of the registry: no accepted data changed or disappeared. Full check with registry access. |
 | `dud report <file>` | Shows the report for a saved result file. |
 
 Flags: `--provider <name>`, `--gpus 0,1`, `--out-dir <folder>`.
@@ -84,6 +85,8 @@ The registry calculates its own verdict with the same rules. It does not use the
 - Only accounts with an accepted full test in the last 30 days can read the registry.
 - Each account can do 100 lookups each day.
 - A lookup needs the card ID, which is the SHA-256 hash of the GPU UUID. There is no list of cards.
+
+- The transparency log shows if the registry changes or removes accepted data. Its head of each day is public, and `log/heads.json` keeps a copy in git.
 
 `THREATS.md` tells how the registry stops fraud, and what it cannot stop.
 `docs/DEPLOY.md` tells how to put the registry on Cloudflare.

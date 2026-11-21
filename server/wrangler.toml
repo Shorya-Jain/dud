@@ -7,6 +7,10 @@ workers_dev = true
 [observability]
 enabled = true
 
+# Each hour: chain new transparency log entries, and record the head of the day.
+[triggers]
+crons = ["17 * * * *"]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "dud-registry"

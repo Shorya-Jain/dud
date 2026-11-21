@@ -89,6 +89,29 @@ The GPU does many products (approximately 42,000 on an A100) in large batches.
 
 To calibrate: run real full tests on each model and record `server_elapsed_ms`. Then set `min_efficiency` (and `assumed_efficiency`) in `specs.yaml` so that honest runs pass with a margin and slower GPUs fail.
 
+## Transparency log
+
+The transparency log lets users find out if the registry changes or removes data after it accepts it.
+Code: `server/src/log.ts` (registry), `src/dud/translog.py` (client), `.github/workflows/log-witness.yml` (a public copy of the heads).
+
+1. When a reading becomes visible to lookups, the registry makes its reading hash:
+   `SHA-256("dud-log-v1:reading:" + client card ID + ":" + canonical JSON of the reading)`.
+   The canonical JSON is the reading as a lookup shows it, with sorted keys and no spaces. The registry stores the text and the hash with the reading.
+2. The registry adds a log entry: `{"v":1,"type":"reading","fp":"<reading hash>"}`.
+   A quarantine or the end of a quarantine adds `{"v":1,"type":"account","account":"<SHA-256 of the account ID>","status":"..."}`.
+3. Each hour, a cron run gives the waiting entries a sequence number and chains them:
+   `leaf = SHA-256("dud-log-v1:leaf:" + entry)`, `chain = SHA-256("dud-log-v1:chain:" + previous chain + leaf)`. The chain before entry 1 is 64 zeros.
+4. The first cron run of each UTC day records the head of the day: the latest chain value.
+5. `GET /v1/log/heads` is public. It has only days and chain values: no data and no counts.
+   The GitHub workflow saves the heads in `log/heads.json` each day, and fails if a saved head changes.
+6. Accounts with access can download all entries (`GET /v1/log`). `dud log` calculates the chain again, compares each head, and keeps a copy of the heads in `~/.dud/log_heads.json`.
+7. Each lookup reading has `log: {seq, fp, canonical}`. `dud quick` checks that the reading hash matches the text and that the text matches the reading. A difference gives the finding `registry_log_mismatch`.
+8. Each accepted submission gives a receipt (the reading hash of each GPU). `dud log` checks that the receipts of your full tests are in the log.
+
+What it shows: a change to an accepted reading, a removed reading, or a rewritten history.
+What it does not show: that a reading is true. The submission checks do that.
+It also does not stop the registry from refusing a submission, or from hiding the log.
+
 ## Full test (milestone 2)
 
 Code: `src/dud/fulltest.py`, `src/dud/collect/dcgm.py`, `src/dud/bench/`.
